@@ -1,0 +1,28 @@
+﻿@page "/"
+@inject ITodoStore TodoStore
+@inject IDispatcher Dispatcher
+@implements IDisposable
+
+<div class="container">
+    <div class="row">
+        <TodoList Items="@TodoStore.Todos" />
+    </div>
+</div>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        TodoStore.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        TodoStore.OnChange -= StateHasChanged;
+    }
+}
+
+
+
+

@@ -1,0 +1,36 @@
+﻿
+<div class="@Class">
+    <div class="btn btn-primary w-100 d-flex align-items-center justify-content-between p-3" @onclick="@OpenClose">
+        <p class="m-0">@Placeholder</p>
+        <span class="oi @chevron" />
+    </div>
+    @if(isOpen)
+    {
+        <div class="p-2 border border-dark rounded mt-1 overflow-auto" style="max-height: 300px;">
+            @Options
+        </div>
+    }
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
+    public RenderFragment Options { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; }
+
+    private bool isOpen = false;
+    private string chevron = "oi-chevron-bottom";
+
+    private void OpenClose()
+    {
+        isOpen = !isOpen;
+        chevron = chevron == "oi-chevron-bottom" ? "oi-chevron-top" : "oi-chevron-bottom";
+
+    }
+}
