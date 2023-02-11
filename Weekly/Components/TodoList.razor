@@ -1,35 +1,43 @@
 ﻿@inject IDispatcher Dispatcher
 
 <section class="col-lg-6 col-md-8 offset-lg-3 offset-md-2 bg-secondary container">
-    @foreach(var todo in Items)
+    @if(Items == null)
     {
-        <div class="p-2 m-2 bg-white rounded row">
-
-            <p class="col-3 mt-1 fw-bold">@todo.Text</p>
-
-            <div class="col-5">
-                    
-                @for(int i = 0; i < todo.NrDone; i++)
-                {
-                    <div class="material-icons bg-success text-white p-1 m-1 border border-dark rounded-circle">@todo.Icon</div>
-                }
-                @for (int i = 0; i < todo.NrTotal - todo.NrDone; i++)
-                {
-                <div class="material-icons text-secondary p-1 m-1 border border-secondary rounded-circle">@todo.Icon</div>
-                }
-            </div>
-            <div class="col-2 d-flex align-items-start"> 
-                <div class="m-1 py-1 text-lowercase fw-bold">
-                    @todo.NrDone / @todo.NrTotal @todo.Unit
-                </div>
-                    
-            </div>
-            <div class="d-flex justify-content-between align-items-start col-2 mt-1">
-                <div class="material-icons text-white bg-danger border-dark rounded p-2" @onclick="() => UnDone(todo)">remove</div>
-                <div class="material-icons text-white bg-success border-dark rounded p-2 ms-1" @onclick="() => Done(todo)">add</div>
-            </div>
-        </div>
+        <p>Loading...</p>
     }
+    else
+    {
+       @foreach(var todo in Items)
+        {
+            <div class="p-2 m-2 bg-white rounded row">
+
+                <p class="col-3 mt-1 fw-bold">@todo.Text</p>
+
+                <div class="col-5">
+                    
+                    @for(int i = 0; i < todo.NrDone; i++)
+                    {
+                        <div class="material-icons bg-success text-white p-1 m-1 border border-dark rounded-circle">@todo.Icon</div>
+                    }
+                    @for (int i = 0; i < todo.NrTotal - todo.NrDone; i++)
+                    {
+                    <div class="material-icons text-secondary p-1 m-1 border border-secondary rounded-circle">@todo.Icon</div>
+                    }
+                </div>
+                <div class="col-2 d-flex align-items-start"> 
+                    <div class="m-1 py-1 text-lowercase fw-bold">
+                        @todo.NrDone / @todo.NrTotal @todo.Unit
+                    </div>
+                    
+                </div>
+                <div class="d-flex justify-content-between align-items-start col-2 mt-1">
+                    <div class="material-icons text-white bg-danger border-dark rounded p-2" @onclick="() => UnDone(todo)">remove</div>
+                    <div class="material-icons text-white bg-success border-dark rounded p-2 ms-1" @onclick="() => Done(todo)">add</div>
+                </div>
+            </div>
+        } 
+    }
+    
 </section>
 
 @code {

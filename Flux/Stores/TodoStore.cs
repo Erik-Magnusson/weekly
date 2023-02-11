@@ -1,7 +1,7 @@
 ﻿using Flux.Dispatcher;
 using Flux.Dispatchables;
 using Data;
-
+using Microsoft.Extensions.Configuration;
 
 namespace Flux.Stores
 {
@@ -13,10 +13,11 @@ namespace Flux.Stores
      
         public Action? OnChange { get; set; }
 
-        public TodoStore(IDispatcher dispatcher, IQueries<Todo> queries, ICommands<Todo> commands)
-        { 
-            Queries = queries;
-            Commands = commands;
+        public TodoStore(IDispatcher dispatcher, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("Todo");
+            Queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
+            Commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
 
             Initialize();
 
@@ -46,6 +47,7 @@ namespace Flux.Stores
         private async void Initialize()
         {
             Todos = await Queries.GetAll();
+            OnChange?.Invoke();
         }
 
     }

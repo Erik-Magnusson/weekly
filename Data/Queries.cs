@@ -1,16 +1,28 @@
-﻿namespace Data
-{
-    public class Queries<T> : IQueries<T>
-    {
+﻿using MongoDB.Driver;
+using MongoDB.Bson;
+using MongoDB.Driver.Linq;
 
-        public Task<IList<T>> GetAll()
+namespace Data
+{
+    public class Queries<T> : IQueries<T> where T : DataEntityBase
+    {
+        private readonly IMongoCollection<T> collection;
+        public Queries(string connectionString, string databaseName, string collectionName)
+        { 
+            var client = new MongoClient(connectionString);
+            collection = client.GetDatabase(databaseName).GetCollection<T>(collectionName);
+        }
+        public async Task<IList<T>> GetAll()
         {
-            throw new NotImplementedException();
+            var filter = Builders<T>.Filter.Empty;
+            return await collection.Find(filter).ToListAsync();
         }
 
-        public Task<T> GetOne(Guid id)
+        public async Task<T?> GetOne(string id)
         {
-            throw new NotImplementedException();
+            var filter = Builders<T>.Filter.Eq(g => g.Id, id);
+            var result = await collection.Find(filter).ToListAsync();
+            return result?.FirstOrDefault();
         }
     }
 }

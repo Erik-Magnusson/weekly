@@ -1,11 +1,14 @@
 using Flux.Dispatcher;
 using Flux.Stores;
+using Data;
+using WeeklyWeb;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.Configure<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<ITodoStore, TodoStore>();
 builder.Services.AddScoped<IDispatcher, Dispatcher>();
 
