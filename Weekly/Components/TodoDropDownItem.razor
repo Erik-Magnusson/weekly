@@ -10,21 +10,7 @@
                 {
                     <option value=@unit>@unit</option>
                 }
-            </InputSelect>
-            <div class="material-icons me-2 border border-light border-2 rounded p-1"
-                @onclick="() => isEditingIcons = !isEditingIcons" 
-                style="cursor: default;">
-                @Item.Icon
-                @if(isEditingIcons)
-                {
-                    <div class="position-absolute bg-light p-1 border border-dark rounded">
-                        @foreach(var icon in Icons)
-                        {
-                            <div class="bg-white m-1 border rounded p-1" @onclick="() => SetIcon(icon.Name)">@icon.Name</div>
-                        }
-                    </div>
-                }
-            </div>
+            </InputSelect>        
             <div class="d-flex">
                 <button type="submit" class="btn btn-success me-1"><span class="oi oi-circle-check" /></button>
                 <button class="btn btn-danger" @onclick="() => isEditing = false"><span class="oi oi-circle-x" /></button>
@@ -37,7 +23,6 @@
             <p class="m-0">@Item.Text</p>
             <p class="m-0">@Item.NrTotal</p>
             <p class="m-0">@Item.Unit</p>
-            <div class="material-icons">@Item.Icon</div>
             <div>
                 <button class="btn btn-primary" @onclick="() => isEditing = !isEditing"><span class="oi oi-pencil" /></button>
                 <button class="btn btn-success"><span class="oi oi-plus" /></button>
@@ -51,22 +36,11 @@
     [Parameter]
     public required Todo Item { get; set; }
 
-    [Parameter]
-    public required IList<Icon> Icons { get; set; }
-
     private bool isEditing;
-    private bool isEditingIcons;
 
     private void Edit()
     {
         isEditing = false;
     }
-
-    private void SetIcon(string icon)
-    {
-        Item.Icon = icon;
-    }
-
-
 
 }

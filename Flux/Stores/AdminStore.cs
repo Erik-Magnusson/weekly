@@ -12,22 +12,18 @@ namespace Flux.Stores
 {
     public class AdminStore : IAdminStore
     {
-        private IQueries<Todo> TodoQueries { get; set; }
-        private ICommands<Todo> TodoCommancs { get; set; }
-        private IQueries<Icon> IconQueries { get; set; }
+        private IQueries<Todo> Queries { get; set; }
+        private ICommands<Todo> Commands { get; set; }
         public IList<Todo> Todos { get; private set; }
-        public IList<Icon> Icons { get; private set; }
 
         public Action? OnChange { get; set; }
         public AdminStore(IDispatcher dispatcher, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("Todo");
-            TodoQueries = new Queries<Todo>(connectionString, "Weekly", "Todo");
-            TodoCommancs = new Commands<Todo>(connectionString, "Weekly", "Todo");
-            IconQueries = new Queries<Icon>(connectionString, "Weekly", "Icons");
+            Queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
+            Commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
 
             Todos = new List<Todo>();
-            Icons = new List<Icon>();
 
             Load();
 
@@ -35,8 +31,7 @@ namespace Flux.Stores
 
         public async void Load()
         {
-            Todos = await TodoQueries.GetAll();
-            Icons = await IconQueries.GetAll();
+            Todos = await Queries.GetAll();
         }
     }
 }

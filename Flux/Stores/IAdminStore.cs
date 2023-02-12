@@ -10,9 +10,6 @@ namespace Flux.Stores
     public interface IAdminStore
     {
         Action? OnChange { get; set; }
-
-        IList<Icon> Icons { get; }
-
         IList<Todo> Todos { get; }
 
     }
