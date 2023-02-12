@@ -17,11 +17,11 @@
                     
                     @for(int i = 0; i < todo.NrDone; i++)
                     {
-                        <div class="material-icons bg-success text-white p-1 m-1 border border-dark rounded-circle">@todo.Icon</div>
+                        <div class="bg-success text-white p-1 m-1 border border-dark rounded-circle"><span class="oi oi-circle-check" /></div>
                     }
                     @for (int i = 0; i < todo.NrTotal - todo.NrDone; i++)
                     {
-                    <div class="material-icons text-secondary p-1 m-1 border border-secondary rounded-circle">@todo.Icon</div>
+                        <div class="material-icons text-secondary p-1 m-1 border border-secondary rounded-circle"><span class="oi oi-circle-x" /></div>
                     }
                 </div>
                 <div class="col-2 d-flex align-items-start"> 
@@ -47,7 +47,7 @@
 
     private void Done(Todo todo)
     {
-        todo.NrDone = todo.NrDone >= todo.NrTotal ? todo.NrTotal : todo.NrDone + 1;
+        todo.NrDone++;
         todo.ActionType = ActionType.UPDATE;
         Dispatcher.Dispatch(todo);
     }

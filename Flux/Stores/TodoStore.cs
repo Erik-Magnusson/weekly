@@ -19,7 +19,9 @@ namespace Flux.Stores
             Queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
             Commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
 
-            Initialize();
+            Todos = new List<Todo>();
+            
+            Load();
 
             dispatcher.Action += async payload =>
             {
@@ -44,7 +46,7 @@ namespace Flux.Stores
             };
         }
 
-        private async void Initialize()
+        private async void Load()
         {
             Todos = await Queries.GetAll();
             OnChange?.Invoke();

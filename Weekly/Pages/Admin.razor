@@ -1,0 +1,55 @@
+﻿@page "/admin"
+@inject IAdminStore AdminStore
+@inject IDispatcher Dispatcher
+@implements IDisposable
+
+<div class="container">
+   <div class="row">
+        <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3 overflow-auto px-2" style="max-height: 300px;">
+            @foreach(var todo in AdminStore.Todos)
+            {
+            <div class="d-flex align-items-center justify-content-between p-2 border border-dark rounded my-1 bg-light">
+                <p class="m-0">@todo.Text</p>
+                <button class="btn btn-danger btn-sm ms-2" @onclick="() => Remove(todo)"><span class="oi oi-trash" /></button>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <DropDown Class="px-2 mt-5 col-md-8 offset-md-2 col-lg-6 offset-lg-3" Placeholder="Choose todo">
+            <Options>
+                @foreach(var todo in AdminStore.Todos)
+                {
+                   <TodoDropDownItem
+                    Item="@todo"
+                    Icons="@AdminStore.Icons"/>
+                }
+            </Options>
+        </DropDown>
+    </div>
+</div>
+@code {
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AdminStore.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AdminStore.OnChange -= StateHasChanged;
+    }
+
+    private void Add(Todo todo)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void Remove(Todo todo)
+    {
+        throw new NotImplementedException();
+    }
+
+}

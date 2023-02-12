@@ -10,6 +10,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.Configure<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<ITodoStore, TodoStore>();
+builder.Services.AddScoped<IAdminStore, AdminStore>();
 builder.Services.AddScoped<IDispatcher, Dispatcher>();
 
 var app = builder.Build();
