@@ -27,17 +27,17 @@ namespace Flux.Stores
             {
                 switch (payload.ActionType)
                 {
-                    case ActionType.ADD:
+                    case ActionType.ADD_TODO:
                         await Commands.AddOne((Todo)payload);
                         Todos.Add((Todo)payload);
                         OnChange?.Invoke();
                         break;
-                    case ActionType.REMOVE:
+                    case ActionType.DELETE_TODO:
                         await Commands.RemoveOne((Todo)payload);
                         Todos.Remove((Todo)payload);
                         OnChange?.Invoke();
                         break;
-                    case ActionType.UPDATE:
+                    case ActionType.UPDATE_TODO:
                         await Commands.ReplaceOne((Todo)payload);
                         Todos = await Queries.GetAll();
                         OnChange?.Invoke();

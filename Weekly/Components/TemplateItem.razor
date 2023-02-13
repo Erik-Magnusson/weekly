@@ -1,0 +1,9 @@
+﻿ <div class="d-flex align-items-center justify-content-between row col-9">
+    <p class="m-0 col-5">@Item.Text</p>
+    <p class="m-0 col-3">@Item.NrTotal</p>
+    <p class="m-0 col-4">@Item.Unit</p>
+</div>
+@code {
+    [Parameter]
+    public required Todo Item { get; set; }
+}

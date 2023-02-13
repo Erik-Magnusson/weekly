@@ -1,0 +1,61 @@
+﻿@inject IDispatcher Dispatcher
+<div class="p-2 border-bottom border-dark">
+    @if(isEditing)
+    {
+        <EditForm class="d-flex align-items-center justify-content-between w-100" Model=@Item OnSubmit=@Save>
+            <InputText @bind-Value=@Item.Text placeholder="@Item.Text" class="form-control me-2" id="todo-text" />
+            <InputNumber @bind-Value=@Item.NrTotal placeholder="@Item.NrTotal" class="form-control me-2" id="todo-nr" />
+            <InputSelect @bind-Value=@Item.Unit class="form-select me-2" id="todo-unit">
+                @foreach (TodoUnit unit in (TodoUnit[]) Enum.GetValues(typeof(TodoUnit)))
+                {
+                <option value=@unit>@unit</option>
+                }
+            </InputSelect>
+            <div class="d-flex justify-content-end material-icons">
+                <button type="submit" class="btn btn-success me-1">done</button>
+                <button type="button" class="btn btn-danger" @onclick="() => isEditing = false">close</button>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="row">
+            <TemplateItem Item="@Item" />
+
+                <div class="material-icons col-3 d-flex justify-content-end">
+                <button class="btn btn-primary ms-1" @onclick="() => isEditing = !isEditing">edit</button>
+                <button class="btn btn-success ms-1" @onclick="AddTodo">add</button>
+                <button class="btn btn-danger ms-1" @onclick="DeleteTemplate">delete_outline</button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public required Todo Item { get; set; }
+
+    private bool isEditing;
+
+    private void Save()
+    {
+        Item.ActionType = ActionType.UPDATE_TEMPLATE;
+        isEditing = false;
+        Dispatcher.Dispatch(Item);
+    }
+
+    private void AddTodo()
+    {
+        Item.ActionType = ActionType.ADD_TODO;
+        Dispatcher.Dispatch(Item);
+    }
+
+    private void DeleteTemplate()
+    {
+        Item.ActionType = ActionType.DELETE_TEMPLATE;
+        Dispatcher.Dispatch(Item);
+    }
+
+
+
+}

@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Flux.Stores
 {
-    public interface IAdminStore
+    public interface ITemplateStore
     {
         Action? OnChange { get; set; }
-        IList<Todo> Todos { get; }
+        IList<Todo> Templates { get; }
 
     }
 }
