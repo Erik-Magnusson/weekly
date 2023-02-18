@@ -1,0 +1,63 @@
+﻿@page "/login"
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager navManager
+@inject IUserStore userStore
+
+<div class="container"> 
+    <div class="row pt-5">
+        <div class="col-6 offset-3">
+            <div class="m-1">
+                <label>Username</label>
+                <input @bind="username" class="form-control @(invalidCredentials ? "border border-danger border-2" : string.Empty)" placeholder="Username" />
+            </div>
+            <div class="m-1">
+                <label>Password</label>
+                <input @bind="password" type="password" class="form-control @(invalidCredentials ? "border border-danger border-2" : string.Empty)" placeholder="Password" />
+            </div>
+            @if (invalidCredentials)
+            {
+                <div class="m-1">
+                    <p class="text-danger fw-bold">Invalid username or password!</p>
+                </div>
+            }
+            <div class="m-1">
+                <button @onclick="LoginUser" class="btn btn-primary">Login</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+@code {
+
+    private bool invalidCredentials = false;
+    private string username = string.Empty;
+    private string password = string.Empty;
+
+    private void LoginUser()
+    {
+        var weeklyAuth = (WeeklyAuthenticationStateProvider)authenticationStateProvider;
+        weeklyAuth.Login(username, password);
+    }
+
+    private async void SetSession()
+    {
+        if (userStore.Session != null)
+        {
+            var weeklyAuth = (WeeklyAuthenticationStateProvider)authenticationStateProvider;
+            await weeklyAuth.SetSession(userStore.Session);
+            navManager.NavigateTo("/", true);
+        }
+        else
+        {
+            invalidCredentials = true;
+            StateHasChanged();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        userStore.OnChange += SetSession;
+    }
+
+}

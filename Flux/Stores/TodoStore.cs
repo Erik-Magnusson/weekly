@@ -9,8 +9,7 @@ namespace Flux.Stores
     {
         private IQueries<Todo> Queries { get; set; }
         private ICommands<Todo> Commands { get; set; }
-        public IList<Todo> Todos { get; private set; }
-     
+        public IList<Todo> Todos { get; private set; } 
         public Action? OnChange { get; set; }
 
         public TodoStore(IDispatcher dispatcher, IConfiguration configuration)

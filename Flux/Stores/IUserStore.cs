@@ -1,15 +1,14 @@
-﻿using Flux.Dispatchables;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Flux.Dispatchables;
 
 namespace Flux.Stores
 {
-    public interface ITemplateStore : IStore
+    public interface IUserStore : IStore
     {
-        IList<Todo> Templates { get; }
-
+        Session? Session { get; }
     }
 }

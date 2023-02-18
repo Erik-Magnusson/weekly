@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Driver.Linq;
+using System.Linq.Expressions;
 
 namespace Data
 {
@@ -21,6 +22,13 @@ namespace Data
         public async Task<T?> GetOne(string id)
         {
             var filter = Builders<T>.Filter.Eq(g => g.Id, id);
+            var result = await collection.Find(filter).ToListAsync();
+            return result?.FirstOrDefault();
+        }
+
+        public async Task<T?> GetOne<U>(Expression<Func<T, U>> expression, U value)
+        {
+            var filter = Builders<T>.Filter.Eq(expression, value);
             var result = await collection.Find(filter).ToListAsync();
             return result?.FirstOrDefault();
         }

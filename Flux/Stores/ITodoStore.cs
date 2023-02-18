@@ -2,11 +2,9 @@
 
 namespace Flux.Stores
 {
-    public interface ITodoStore
-    {
-        Action? OnChange { get; set; }
-        
+    public interface ITodoStore : IStore
+    {        
         IList<Todo> Todos { get; }
-                
+        
     }
 }
