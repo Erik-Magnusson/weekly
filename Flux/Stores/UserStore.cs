@@ -67,12 +67,14 @@ namespace Flux.Stores
             user.Salt = Convert.ToHexString(salt);
             user.Password = Convert.ToHexString(encryptedPassword);
 
-            await Commands.AddOne(user);
-            return new Session
-            {
-                UserId = user.UserId,
-                Username = user.Username
-            };            
+            bool success = await Commands.AddOne(user);
+            if (success)
+                return new Session
+                {
+                    UserId = user.UserId,
+                    Username = user.Username
+                };
+            return null;
         }
 
         private async Task<Session?> LoginUser(User userToAuthenticate)

@@ -13,9 +13,9 @@ namespace Data
             var client = new MongoClient(connectionString);
             collection = client.GetDatabase(databaseName).GetCollection<T>(collectionName);
         }
-        public async Task<IList<T>> GetAll()
+        public async Task<IList<T>> GetAll<U>(Expression<Func<T, U>> expression, U value)
         {
-            var filter = Builders<T>.Filter.Empty;
+            var filter = Builders<T>.Filter.Eq(expression, value);
             return await collection.Find(filter).ToListAsync();
         }
 

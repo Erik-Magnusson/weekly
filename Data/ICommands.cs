@@ -9,7 +9,7 @@ namespace Data
     public interface ICommands<T>
     {
 
-        Task AddOne(T item);
+        Task<bool> AddOne(T item);
 
         Task<bool> RemoveOne(T item);
 

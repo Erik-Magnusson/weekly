@@ -47,7 +47,7 @@
     private void AddTodo()
     {
         Item.ActionType = ActionType.ADD_TODO;
-        Dispatcher.Dispatch(Item);
+        Dispatcher.Dispatch(new Todo(Item));
     }
 
     private void DeleteTemplate()

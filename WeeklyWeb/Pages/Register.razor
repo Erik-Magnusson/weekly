@@ -2,62 +2,60 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager navManager
 @inject IUserStore userStore
+@using System.ComponentModel.DataAnnotations
 
 <div class="container">
     <div class="row pt-5">
-        <div class="col-6 offset-3">
-            <div class="m-1">
-                <label>Username</label>
-                <input @bind="username" class="form-control @(invalidCredentials ? "border border-danger border-2" : string.Empty)" placeholder="Username" />
+
+        <EditForm class="col-6 offset-3" Model=@credentials OnValidSubmit="@RegisterUser">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group m-1">
+                <InputText @bind-Value=credentials.Username class="form-control" id="username" placeholder="Username" />
             </div>
-            <div class="m-1">
-                <label>Password</label>
-                <input @bind="password" type="password" class="form-control @(invalidCredentials ? "border border-danger border-2" : string.Empty)" placeholder="Password" />
+            <div class="form-group m-1">
+                <InputText @bind-Value=credentials.Password type="password" class="form-control" id="password" placeholder="Password" />
             </div>
-            @if (invalidCredentials)
-            {
-                <div class="m-1">
-                    <p class="text-danger fw-bold">Invalid username or password!</p>
-                </div>
-            }
-            <div class="m-1">
-                <button @onclick="RegisterUser" class="btn btn-primary">Register</button>
+            <div class="m-1 mt-2">
+                <input type="submit" class="btn btn-primary" value="Register" />
             </div>
-        </div>
+    </EditForm>
 
     </div>
 </div>
 @code {
 
-    private bool invalidCredentials = false;
-    private string username = string.Empty;
-    private string password = string.Empty;
+    private class Credentials
+    {
+        [Required]
+        [RegularExpression(@"^[a-zA-Z0-9_-]*$", ErrorMessage = "Username contains invalid characters.")]
+        public string Username { get; set; }
+        [Required]
+        [MinLength(8, ErrorMessage = "Password needs to be at least 8 characters.")]
+        public string Password { get; set; }
+    }
+
+    private Credentials credentials = new Credentials();
 
     private void RegisterUser()
     {
         var weeklyAuth = (WeeklyAuthenticationStateProvider)authenticationStateProvider;
-        weeklyAuth.Register(username, password);
+        weeklyAuth.Register(credentials.Username, credentials.Password);
     }
 
-    private async void SetSession()
+    private void Update()
     {
         if (userStore.Session != null)
         {
-            var weeklyAuth = (WeeklyAuthenticationStateProvider)authenticationStateProvider;
-            await weeklyAuth.SetSession(userStore.Session);
             navManager.NavigateTo("/", true);
         }
-        else
-        {
-            invalidCredentials = true;
-            StateHasChanged();
-        }
+        
     }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        userStore.OnChange += SetSession;
+        userStore.OnChange += Update;
     }
 
 }

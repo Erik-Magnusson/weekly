@@ -12,16 +12,19 @@ namespace Flux.Stores
 {
     public class TemplateStore : ITemplateStore
     {
+        private IUserStore UserStore { get; set; }
         private IQueries<Todo> Queries { get; set; }
         private ICommands<Todo> Commands { get; set; }
         public IList<Todo> Templates { get; private set; }
 
         public Action? OnChange { get; set; }
-        public TemplateStore(IDispatcher dispatcher, IConfiguration configuration)
+        public TemplateStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
         {
             var connectionString = configuration.GetConnectionString("Todo");
             Queries = new Queries<Todo>(connectionString, "Weekly", "Template");
             Commands = new Commands<Todo>(connectionString, "Weekly", "Template");
+            UserStore = userStore;
+            UserStore.OnChange += Load;
 
             Templates = new List<Todo>();
 
@@ -32,8 +35,10 @@ namespace Flux.Stores
                 switch (payload.ActionType)
                 {
                     case ActionType.ADD_TEMPLATE:
-                        await Commands.AddOne((Todo)payload);
-                        Templates.Add((Todo)payload);
+                        ((Todo)payload).UserId = UserStore.Session.UserId;
+                        bool success = await Commands.AddOne((Todo)payload);
+                        if (success)
+                            Templates.Add((Todo)payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.DELETE_TEMPLATE:
@@ -43,7 +48,7 @@ namespace Flux.Stores
                         break;
                     case ActionType.UPDATE_TEMPLATE:
                         await Commands.ReplaceOne((Todo)payload);
-                        Templates = await Queries.GetAll();
+                        Templates = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
                         OnChange?.Invoke();
                         break;
                 }
@@ -53,7 +58,7 @@ namespace Flux.Stores
 
         public async void Load()
         {
-            Templates = await Queries.GetAll();
+            Templates = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
         }
     }
 }

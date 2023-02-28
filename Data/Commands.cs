@@ -16,9 +16,18 @@ namespace Data
             collection = client.GetDatabase(databaseName).GetCollection<T>(collectionName);
         }
 
-        public async Task AddOne(T item)
+        public async Task<bool> AddOne(T item)
         {
-            await collection.InsertOneAsync(item);
+            try
+            {
+                await collection.InsertOneAsync(item);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+            
         }
 
         public async Task<bool> RemoveOne(T item)

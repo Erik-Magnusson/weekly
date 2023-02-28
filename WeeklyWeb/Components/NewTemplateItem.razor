@@ -1,10 +1,10 @@
 ﻿@inject IDispatcher Dispatcher
 <div class="p-2 border-bottom border-top mt-4 bg-light border-dark">
     <h5 class="text-sm-start">New Todo</h5>
-    <EditForm class="d-flex align-items-center justify-content-between w-100" Model=@newTemplate OnSubmit=@AddNewTemplate>
-        <InputText @bind-Value=@newTemplate.Text placeholder="Name" class="form-control me-2" id="todo-text" />
-        <InputNumber @bind-Value=@newTemplate.NrTotal placeholder="@newTemplate.NrTotal" class="form-control me-2" id="todo-nr" />
-        <InputSelect @bind-Value=@newTemplate.Unit class="form-select me-2" id="todo-unit">
+    <EditForm class="d-flex align-items-center justify-content-between w-100" Model=@template OnSubmit=@AddNewTemplate>
+        <InputText @bind-Value=@template.Text placeholder="Name" class="form-control me-2" id="todo-text" />
+        <InputNumber @bind-Value=@template.NrTotal placeholder="@template.NrTotal" class="form-control me-2" id="todo-nr" />
+        <InputSelect @bind-Value=@template.Unit class="form-select me-2" id="todo-unit">
             @foreach (TodoUnit unit in (TodoUnit[])Enum.GetValues(typeof(TodoUnit)))
             {
                 <option value=@unit>@unit</option>
@@ -20,7 +20,7 @@
 
 @code {
 
-    private Todo newTemplate = new Todo()
+    private Todo template = new Todo()
     {
         ActionType = ActionType.ADD_TEMPLATE,
         Text = string.Empty,
@@ -31,6 +31,7 @@
 
     private void AddNewTemplate()
     {
+        var newTemplate = new Todo(template);
         Dispatcher.Dispatch(newTemplate);
     }
 

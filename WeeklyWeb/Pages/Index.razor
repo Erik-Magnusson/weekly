@@ -4,21 +4,28 @@
 @implements IDisposable
 @attribute [Authorize]
 
-<div class="container">
-
-    <div class="col-lg-6 col-md-8 offset-lg-3 offset-md-2 bg-secondary container p-1">
+<div class="bg-light container p-2 mt-2 border border-dark rounded">
+@if (TodoStore.Todos.Count == 0)
+{
+    <div class="d-flex align-items-center mt-4 mb-4 flex-column">
+        <p class="fw-bold">There are curently no items in your list. </p>
+        <a class="text-black" href="/admin">Add a todo to get started.</a>
+    </div>      
+}
+<div class="mt-3 mb-3">
     @foreach (var todo in TodoStore.Todos)
     {
-        <div class="p-2 m-2 bg-white rounded row">
-            <TodoItem Item="@todo" />
-            <div class="d-flex justify-content-end align-items-start col-3 mt-1">
-                <button class="btn btn-danger material-icons me-1 p-2" @onclick="() => UnDone(todo)">remove</button>
-                <button class="btn btn-success material-icons p-2" @onclick="() => Done(todo)">add</button>
-            </div>
+    <div class="p-2 m-2 bg-white border border-dark rounded row">
+        <TodoItem Item="@todo" />
+        <div class="d-flex justify-content-end align-items-start col-3 mt-1">
+            <button class="btn btn-danger material-icons me-1 p-2" @onclick="() => UnDone(todo)">remove</button>
+            <button class="btn btn-success material-icons p-2" @onclick="() => Done(todo)">add</button>
         </div>
-    }
     </div>
+    }
 </div>
+</div>
+
 
 @code {
 

@@ -9,7 +9,7 @@ namespace Data
 {
     public interface IQueries<T>
     {
-        Task<IList<T>> GetAll();
+        Task<IList<T>> GetAll<U>(Expression<Func<T, U>> expression, U value);
         Task<T?> GetOne(string id);
         Task<T?> GetOne<U>(Expression<Func<T, U>> expression, U value);
 

@@ -13,10 +13,10 @@ builder.Services.AddAuthenticationCore();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.Configure<IConfiguration>(builder.Configuration);
-builder.Services.AddScoped<IUserStore, UserStore>();
-builder.Services.AddScoped<ITodoStore, TodoStore>();
-builder.Services.AddScoped<ITemplateStore, TemplateStore>();
-builder.Services.AddScoped<IDispatcher, Dispatcher>();
+builder.Services.AddSingleton<IDispatcher, Dispatcher>();
+builder.Services.AddSingleton<IUserStore, UserStore>();
+builder.Services.AddSingleton<ITodoStore, TodoStore>();
+builder.Services.AddSingleton<ITemplateStore, TemplateStore>();
 builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, WeeklyAuthenticationStateProvider>();
 

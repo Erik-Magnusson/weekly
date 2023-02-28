@@ -9,8 +9,8 @@ namespace WeeklyWeb.Authentication
 {
     public class WeeklyAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private IDispatcher dispatcher { get; set; }
-        private IUserStore userStore { get; set; }
+        private IDispatcher Dispatcher { get; set; }
+        private IUserStore UserStore { get; set; }
 
         private readonly ProtectedSessionStorage sessionStorage;
 
@@ -19,9 +19,9 @@ namespace WeeklyWeb.Authentication
         public WeeklyAuthenticationStateProvider(ProtectedSessionStorage sessionStorage, IUserStore userStorage, IDispatcher dispatcher)
         {
             this.sessionStorage = sessionStorage;
-            this.dispatcher = dispatcher;
-            this.userStore = userStorage;
-            this.userStore.OnChange += UpdateAuthenticationState;
+            this.Dispatcher = dispatcher;
+            this.UserStore = userStorage;
+            this.UserStore.OnChange += UpdateAuthenticationState;
         }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
@@ -55,7 +55,7 @@ namespace WeeklyWeb.Authentication
                 Username = username,
                 Password = password
             };
-            dispatcher.Dispatch(user);
+            Dispatcher.Dispatch(user);
         }
 
         public void Logout()
@@ -64,7 +64,7 @@ namespace WeeklyWeb.Authentication
             {
                 ActionType = ActionType.LOGOUT_USER,
             };
-            dispatcher.Dispatch(user);
+            Dispatcher.Dispatch(user);
         }
 
         public void Register(string username, string password)
@@ -75,28 +75,38 @@ namespace WeeklyWeb.Authentication
                 Username = username,
                 Password = password
             };
-            dispatcher.Dispatch(user);
+            Dispatcher.Dispatch(user);
         }
 
-        public void UpdateAuthenticationState()
+        public async void UpdateAuthenticationState()
         {
 
             ClaimsPrincipal claimsPrincipal = notAuthenticated;
 
-            if (userStore.Session != null)
+            if (UserStore.Session != null)
             {
                 claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, userStore.Session.Username),
-                    new Claim(ClaimTypes.NameIdentifier, userStore.Session.UserId.ToString())
+                    new Claim(ClaimTypes.Name, UserStore.Session.Username),
+                    new Claim(ClaimTypes.NameIdentifier, UserStore.Session.UserId.ToString())
                 }));
+                await SetSession(UserStore.Session);
             }
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
+           
         }
 
-        public async Task SetSession(Session session)
+        private async Task SetSession(Session session)
         {
-            await sessionStorage.SetAsync("weeklysession", session);
+            try
+            {
+                await sessionStorage.SetAsync("weeklysession", session);
+            }
+            catch
+            {
+                //JS Interop Exception
+            }
+            
         }
     }
 }
