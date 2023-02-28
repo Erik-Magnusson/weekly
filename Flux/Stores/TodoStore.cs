@@ -52,8 +52,7 @@ namespace Flux.Stores
                         break;
                     case ActionType.UPDATE_TODO:
                         await Commands.ReplaceOne((Todo)payload);
-                        Todos = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
-                        OnChange?.Invoke();
+                        Load();
                         break;
                     case ActionType.UPDATE_WEEK:
                         Week = ((Week)payload).WeekNr;
