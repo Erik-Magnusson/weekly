@@ -5,6 +5,7 @@
 @attribute [Authorize]
 
 <div class="bg-light container p-2 mt-2 border border-dark rounded">
+<WeekSelector CurrentWeek="@TodoStore.Week" />
 @if (TodoStore.Todos.Count == 0)
 {
     <div class="d-flex align-items-center mt-4 mb-4 flex-column">

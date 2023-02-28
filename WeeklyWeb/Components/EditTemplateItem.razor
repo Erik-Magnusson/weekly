@@ -35,6 +35,9 @@
     [Parameter]
     public required Todo Item { get; set; }
 
+    [Parameter]
+    public required int Week { get; set; }
+
     private bool isEditing;
 
     private void Save()
@@ -47,6 +50,7 @@
     private void AddTodo()
     {
         Item.ActionType = ActionType.ADD_TODO;
+        Item.Week = Week;
         Dispatcher.Dispatch(new Todo(Item));
     }
 

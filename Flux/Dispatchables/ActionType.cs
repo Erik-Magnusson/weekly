@@ -11,6 +11,7 @@ namespace Flux.Dispatchables
         UPDATE_TEMPLATE,
         NEW_USER,
         LOGIN_USER,
-        LOGOUT_USER
+        LOGOUT_USER,
+        UPDATE_WEEK
     }
 }

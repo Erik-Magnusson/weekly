@@ -2,6 +2,7 @@
 using Flux.Dispatchables;
 using Data;
 using Microsoft.Extensions.Configuration;
+using System.Globalization;
 
 namespace Flux.Stores
 {
@@ -11,7 +12,11 @@ namespace Flux.Stores
         private IQueries<Todo> Queries { get; set; }
         private ICommands<Todo> Commands { get; set; }
         public IList<Todo> Todos { get; private set; } 
+        public int Week { get; private set; }
         public Action? OnChange { get; set; }
+
+        private Calendar calendar;
+
 
         public TodoStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
         {
@@ -21,6 +26,9 @@ namespace Flux.Stores
             UserStore = userStore;
             UserStore.OnChange += Load;
 
+            CultureInfo culture = new CultureInfo("sv-SE");
+            calendar = culture.Calendar;
+            Week = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFullWeek, DateTime.Now.DayOfWeek);
 
             Todos = new List<Todo>();
 
@@ -47,6 +55,10 @@ namespace Flux.Stores
                         Todos = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
                         OnChange?.Invoke();
                         break;
+                    case ActionType.UPDATE_WEEK:
+                        Week = ((Week)payload).WeekNr;
+                        Load();
+                        break;
                 }
                 return;
             };
@@ -55,6 +67,7 @@ namespace Flux.Stores
         private async void Load()
         {
             Todos = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
+            Todos = Todos.Where(x => x.Week == Week).ToList();
             OnChange?.Invoke();
         }
 

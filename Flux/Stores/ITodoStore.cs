@@ -5,6 +5,7 @@ namespace Flux.Stores
     public interface ITodoStore : IStore
     {        
         IList<Todo> Todos { get; }
+        int Week { get; }
         
     }
 }
