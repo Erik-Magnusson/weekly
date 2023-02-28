@@ -11,9 +11,11 @@ namespace Flux.Stores
         private IUserStore UserStore { get; set; }
         private IQueries<Todo> Queries { get; set; }
         private ICommands<Todo> Commands { get; set; }
-        public IList<Todo> Todos { get; private set; } 
+        public IList<Todo> Todos { get; private set; }  
         public int Week { get; private set; }
         public Action? OnChange { get; set; }
+
+        private IList<Todo> allTodos;
 
         private Calendar calendar;
 
@@ -30,7 +32,7 @@ namespace Flux.Stores
             calendar = culture.Calendar;
             Week = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFullWeek, DateTime.Now.DayOfWeek);
 
-            Todos = new List<Todo>();
+            allTodos = Todos = new List<Todo>();
 
             Load();
 
@@ -56,7 +58,8 @@ namespace Flux.Stores
                         break;
                     case ActionType.UPDATE_WEEK:
                         Week = ((Week)payload).WeekNr;
-                        Load();
+                        Todos = allTodos.Where(x => x.Week == Week).ToList();
+                        OnChange?.Invoke();
                         break;
                 }
                 return;
@@ -65,8 +68,8 @@ namespace Flux.Stores
 
         private async void Load()
         {
-            Todos = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
-            Todos = Todos.Where(x => x.Week == Week).ToList();
+            allTodos = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
+            Todos = allTodos.Where(x => x.Week == Week).ToList();
             OnChange?.Invoke();
         }
 
