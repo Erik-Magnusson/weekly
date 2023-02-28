@@ -6,7 +6,6 @@
 
 <div class="container">
     <div class="row pt-5">
-
         <EditForm class="col-6 offset-3" Model=@credentials OnValidSubmit="@RegisterUser">
             <DataAnnotationsValidator />
             <ValidationSummary />
@@ -19,8 +18,7 @@
             <div class="m-1 mt-2">
                 <input type="submit" class="btn btn-primary" value="Register" />
             </div>
-    </EditForm>
-
+        </EditForm>
     </div>
 </div>
 @code {

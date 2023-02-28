@@ -15,7 +15,7 @@ namespace Flux.Stores
 
         public TodoStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
         {
-            var connectionString = configuration.GetConnectionString("Todo");
+            var connectionString = configuration.GetConnectionString("Weekly");
             Queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
             Commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
             UserStore = userStore;

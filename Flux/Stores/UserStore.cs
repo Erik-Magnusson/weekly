@@ -23,7 +23,7 @@ namespace Flux.Stores
 
         public UserStore(IDispatcher dispatchatcher, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("Todo");
+            var connectionString = configuration.GetConnectionString("Weekly");
             Queries = new Queries<User>(connectionString, "Weekly", "User");
             Commands = new Commands<User>(connectionString, "Weekly", "User");
             Session = null;

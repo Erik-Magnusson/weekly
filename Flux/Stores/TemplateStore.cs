@@ -20,7 +20,7 @@ namespace Flux.Stores
         public Action? OnChange { get; set; }
         public TemplateStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
         {
-            var connectionString = configuration.GetConnectionString("Todo");
+            var connectionString = configuration.GetConnectionString("Weekly");
             Queries = new Queries<Todo>(connectionString, "Weekly", "Template");
             Commands = new Commands<Todo>(connectionString, "Weekly", "Template");
             UserStore = userStore;

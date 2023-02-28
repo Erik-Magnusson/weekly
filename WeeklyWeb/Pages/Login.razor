@@ -7,18 +7,19 @@
 <div class="container"> 
     <div class="row pt-5">
         <div class="col-6 offset-3">
-            <div class="m-1">
-                <input @bind="username" class="form-control @(invalidCredentials ? "border border-danger border-2" : string.Empty)" placeholder="Username" />
-            </div>
-            <div class="m-1">
-                <input @bind="password" type="password" class="form-control @(invalidCredentials ? "border border-danger border-2" : string.Empty)" placeholder="Password" />
-            </div>
             @if (invalidCredentials)
             {
-                <div class="m-1">
-                    <p class="text-danger fw-bold">Invalid username or password.</p>
-                </div>
+                <ul class="validation-errors">
+                    <li class="validation-message">Invalid username or password.</li>
+                </ul>
             }
+            <div class="m-1">
+                <input @bind="username" class="form-control @(invalidCredentials ? "modified invalid" : string.Empty)" placeholder="Username" />
+            </div>
+            <div class="m-1">
+                <input @bind="password" type="password" class="form-control @(invalidCredentials ? "modified invalid" : string.Empty)" placeholder="Password" />
+            </div>
+           
             <div class="m-1 mt-2">
                 <button @onclick="LoginUser" class="btn btn-primary">Login</button>
             </div>
@@ -47,6 +48,7 @@
         if (userStore.Session == null)
         {
             invalidCredentials = true;
+            InvokeAsync(() => StateHasChanged());
             return;
         }
         navManager.NavigateTo("/", true);
