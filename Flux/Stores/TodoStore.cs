@@ -12,6 +12,7 @@ namespace Flux.Stores
         private IQueries<Todo> Queries { get; set; }
         private ICommands<Todo> Commands { get; set; }
         public IList<Todo> Todos { get; private set; }  
+        public int Year { get; private set; }
         public int Week { get; private set; }
         public Action? OnChange { get; set; }
 
@@ -30,7 +31,9 @@ namespace Flux.Stores
 
             CultureInfo culture = new CultureInfo("sv-SE");
             calendar = culture.Calendar;
+            Year = calendar.GetYear(DateTime.Now);
             Week = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFullWeek, DateTime.Now.DayOfWeek);
+            
 
             allTodos = Todos = new List<Todo>();
 
@@ -44,33 +47,54 @@ namespace Flux.Stores
                         ((Todo)payload).UserId = UserStore.Session.UserId;
                         bool success = await Commands.AddOne((Todo)payload);
                         if(success)
-                            Todos.Add((Todo)payload);
-                        OnChange?.Invoke();
+                        {
+                            allTodos.Add((Todo)payload);
+                            FilterTodos();
+                        }
                         break;
                     case ActionType.DELETE_TODO:
                         await Commands.RemoveOne((Todo)payload);
-                        Todos.Remove((Todo)payload);
-                        OnChange?.Invoke();
+                        allTodos.Remove((Todo)payload);
+                        FilterTodos();
                         break;
                     case ActionType.UPDATE_TODO:
                         await Commands.ReplaceOne((Todo)payload);
-                        Load();
+                        var idx = allTodos.IndexOf(allTodos.FirstOrDefault(x => x.Id == ((Todo)payload).Id));
+                        if(idx != -1)
+                        {
+                            allTodos[idx] = (Todo)payload;
+                            FilterTodos();
+                        }
                         break;
                     case ActionType.UPDATE_WEEK:
                         Week = ((Week)payload).WeekNr;
-                        Todos = allTodos.Where(x => x.Week == Week).ToList();
-                        OnChange?.Invoke();
+                        if (Week == 0)
+                        {
+                            Year--;
+                            Week = 52;
+                        }
+                        if (Week > 52)
+                        {
+                            Year++;
+                            Week = 1;
+                        }
+                        FilterTodos();
                         break;
                 }
                 return;
             };
         }
 
+        private void FilterTodos()
+        {
+            Todos = allTodos.Where(x => x.Week == Week && x.Year == Year).ToList();
+            OnChange?.Invoke();
+        }
+
         private async void Load()
         {
             allTodos = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
-            Todos = allTodos.Where(x => x.Week == Week).ToList();
-            OnChange?.Invoke();
+            FilterTodos();
         }
 
     }

@@ -6,7 +6,7 @@
             <button class="btn btn-primary" @onclick="() => dispatcher.Dispatch(new Week(CurrentWeek - 1))">chevron_left</button>
         </div>
         <div>
-            <h4 class="fw-bold mb-0 text-decoration-underline">Week: @CurrentWeek</h4>
+            <h4 class="fw-bold mb-0">Week @CurrentWeek - @CurrentYear</h4>
         </div>
         <div class="material-icons">
             <button class="btn btn-primary" @onclick="() => dispatcher.Dispatch(new Week(CurrentWeek + 1))">chevron_right</button>
@@ -18,6 +18,9 @@
 
     [Parameter]
     public int CurrentWeek { get; set; }
+
+    [Parameter]
+    public int CurrentYear { get; set; }
 
 
 }

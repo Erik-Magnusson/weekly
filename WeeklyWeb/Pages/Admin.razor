@@ -8,7 +8,10 @@
 
 
 <div class="mt-2 p-2 bg-light border border-dark rounded">
-    <WeekSelector CurrentWeek="@TodoStore.Week" />
+    <WeekSelector
+        CurrentWeek="@TodoStore.Week"
+        CurrentYear="@TodoStore.Year"
+    />
     @if (TodoStore.Todos.Count == 0)
     {
         <div class="d-flex align-items-center mt-4 mb-3 flex-column">
@@ -32,8 +35,10 @@
         @foreach(var template in TemplateStore.Templates)
         {
             <EditTemplateItem
-            Item="@template"
-            Week="@TodoStore.Week"/>
+                Item="@template"
+                Week="@TodoStore.Week"
+                Year="@TodoStore.Year"
+            />
         }
         <NewTemplateItem/>
     </Options>

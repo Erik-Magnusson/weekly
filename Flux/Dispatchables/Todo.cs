@@ -11,6 +11,7 @@ namespace Flux.Dispatchables
         public int NrDone { get; set; }
         public TodoUnit Unit { get; set; }
         public int Week { get; set; }
+        public int Year { get; set; }
 
         public Todo(Todo todo)
         {
@@ -22,6 +23,8 @@ namespace Flux.Dispatchables
             this.NrDone = todo.NrDone;
             this.Unit = todo.Unit;
             this.Week = todo.Week;
+            this.Year = todo.Year;
+
         }
 
         public Todo() { }
