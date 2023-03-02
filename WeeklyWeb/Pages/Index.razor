@@ -21,10 +21,7 @@
         {
         <div class="p-2 m-2 bg-white border border-dark rounded row">
             <TodoItem Item="@todo" />
-            <div class="d-flex justify-content-end align-items-start col-3 mt-1">
-                <button class="btn btn-danger material-icons me-1 p-2" @onclick="() => UnDone(todo)">remove</button>
-                <button class="btn btn-success material-icons p-2" @onclick="() => Done(todo)">add</button>
-            </div>
+            
         </div>
         }
     </div>
@@ -44,19 +41,6 @@
         TodoStore.OnChange -= StateHasChanged;
     }
 
-    private void Done(Todo todo)
-    {
-        todo.NrDone++;
-        todo.ActionType = ActionType.UPDATE_TODO;
-        Dispatcher.Dispatch(todo);
-    }
-
-    private void UnDone(Todo todo)
-    {
-        todo.NrDone = todo.NrDone <= 0 ? 0 : todo.NrDone - 1;
-        todo.ActionType = ActionType.UPDATE_TODO;
-        Dispatcher.Dispatch(todo);
-    }
 }
 
 

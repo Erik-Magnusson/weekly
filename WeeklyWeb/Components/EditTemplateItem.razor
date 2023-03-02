@@ -2,7 +2,7 @@
 <div class="p-2 border-bottom border-dark">
     @if(isEditing)
     {
-        <EditForm class="d-flex align-items-center justify-content-between w-100" Model=@Item OnSubmit=@Save>
+        <EditForm class="d-flex align-items-center justify-content-between" Model=@Item OnSubmit=@Save>
             <InputText @bind-Value=@Item.Text placeholder="@Item.Text" class="form-control me-2" id="todo-text" />
             <InputNumber @bind-Value=@Item.NrTotal placeholder="@Item.NrTotal" class="form-control me-2" id="todo-nr" />
             <InputSelect @bind-Value=@Item.Unit class="form-select me-2" id="todo-unit">
@@ -20,14 +20,17 @@
     else
     {
         <div class="row">
-            <TemplateItem Item="@Item" />
-
-                <div class="material-icons col-3 d-flex justify-content-end">
+            <p class="col-3 m-0">@Item.Text</p>
+            <p class="col-1 m-0">@Item.NrTotal</p>
+            <p class="col-2 m-0">@Item.Unit</p>
+        
+            <div class="col-6 material-icons d-flex justify-content-end align-items-start">
                 <button class="btn btn-primary ms-1" @onclick="() => isEditing = !isEditing">edit</button>
                 <button class="btn btn-success ms-1" @onclick="AddTodo">add</button>
                 <button class="btn btn-danger ms-1" @onclick="DeleteTemplate">delete_outline</button>
             </div>
         </div>
+
     }
 </div>
 
@@ -35,11 +38,6 @@
     [Parameter]
     public required Todo Item { get; set; }
 
-    [Parameter]
-    public required int Year { get; set; }
-
-    [Parameter]
-    public required int Week { get; set; }
 
     private bool isEditing;
 
@@ -53,8 +51,6 @@
     private void AddTodo()
     {
         Item.ActionType = ActionType.ADD_TODO;
-        Item.Week = Week;
-        Item.Year = Year;
         Dispatcher.Dispatch(new Todo(Item));
     }
 

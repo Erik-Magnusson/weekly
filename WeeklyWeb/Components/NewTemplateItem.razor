@@ -1,7 +1,7 @@
 ﻿@inject IDispatcher Dispatcher
 <div class="p-2 border-bottom border-top mt-4 bg-light border-dark">
     <h5 class="text-sm-start">New Todo</h5>
-    <EditForm class="d-flex align-items-center justify-content-between w-100" Model=@template OnSubmit=@AddNewTemplate>
+    <EditForm class="d-flex align-items-center justify-content-between" Model=@template OnSubmit=@AddNewTemplate>
         <InputText @bind-Value=@template.Text placeholder="Name" class="form-control me-2" id="todo-text" />
         <InputNumber @bind-Value=@template.NrTotal placeholder="@template.NrTotal" class="form-control me-2" id="todo-nr" />
         <InputSelect @bind-Value=@template.Unit class="form-select me-2" id="todo-unit">

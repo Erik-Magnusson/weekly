@@ -44,11 +44,14 @@ namespace Flux.Stores
                 switch (payload.ActionType)
                 {
                     case ActionType.ADD_TODO:
-                        ((Todo)payload).UserId = UserStore.Session.UserId;
-                        bool success = await Commands.AddOne((Todo)payload);
+                        var todo = (Todo)payload;
+                        todo.UserId = UserStore.Session.UserId;
+                        todo.Week = Week;
+                        todo.Year= Year;
+                        bool success = await Commands.AddOne(todo);
                         if(success)
                         {
-                            allTodos.Add((Todo)payload);
+                            allTodos.Add(todo);
                             FilterTodos();
                         }
                         break;
