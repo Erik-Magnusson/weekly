@@ -1,7 +1,7 @@
 ﻿@page "/admin"
-@inject ITemplateStore TemplateStore
-@inject ITodoStore TodoStore
-@inject IDispatcher Dispatcher
+@inject ITemplateStore templateStore
+@inject ITodoStore todoStore
+@inject IDispatcher dispatcher
 @implements IDisposable
 @attribute [Authorize]
 
@@ -9,17 +9,17 @@
 
 <div class="mt-2 p-2 bg-light border border-dark rounded">
     <WeekSelector
-        CurrentWeek="@TodoStore.Week"
-        CurrentYear="@TodoStore.Year"
+        CurrentWeek="@todoStore.Week"
+        CurrentYear="@todoStore.Year"
     />
-    @if (TodoStore.Todos.Count == 0)
+    @if (todoStore.Todos.Count == 0)
     {
         <div class="d-flex align-items-center mt-4 mb-3 flex-column">
             <p class="fw-bold">There are curently no items in your list. </p>
         </div>
     }
     <div class="mt-3 mb-3">
-        @foreach(var todo in TodoStore.Todos)
+        @foreach(var todo in todoStore.Todos)
         {
         <div class="p-2 m-1 border border-dark rounded bg-white">
             <div class="row">
@@ -37,7 +37,7 @@
 </div>
 <DropDown Class="mt-3" Placeholder="Choose todo">
     <Options>
-        @foreach(var template in TemplateStore.Templates)
+        @foreach(var template in templateStore.Templates)
         {
             <EditTemplateItem Item="@template" />
         }
@@ -51,20 +51,20 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        TodoStore.OnChange += StateHasChanged;
-        TemplateStore.OnChange += StateHasChanged;
+        todoStore.OnChange += StateHasChanged;
+        templateStore.OnChange += StateHasChanged;
     }
 
     public void Dispose()
     {
-        TodoStore.OnChange -= StateHasChanged;
-        TemplateStore.OnChange -= StateHasChanged;
+        todoStore.OnChange -= StateHasChanged;
+        templateStore.OnChange -= StateHasChanged;
     }
 
     private void DeleteTodo(Todo todo)
     {
         todo.ActionType = ActionType.DELETE_TODO;
-        Dispatcher.Dispatch(todo);
+        dispatcher.Dispatch(todo);
     }
 
 }

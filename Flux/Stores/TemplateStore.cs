@@ -12,19 +12,19 @@ namespace Flux.Stores
 {
     public class TemplateStore : ITemplateStore
     {
-        private IUserStore UserStore { get; set; }
-        private IQueries<Todo> Queries { get; set; }
-        private ICommands<Todo> Commands { get; set; }
+        private readonly IUserStore userStore;
+        private readonly IQueries<Todo> queries;
+        private readonly ICommands<Todo> commands;
         public IList<Todo> Templates { get; private set; }
-
         public Action? OnChange { get; set; }
+
         public TemplateStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
         {
             var connectionString = configuration.GetConnectionString("Weekly");
-            Queries = new Queries<Todo>(connectionString, "Weekly", "Template");
-            Commands = new Commands<Todo>(connectionString, "Weekly", "Template");
-            UserStore = userStore;
-            UserStore.OnChange += Load;
+            queries = new Queries<Todo>(connectionString, "Weekly", "Template");
+            commands = new Commands<Todo>(connectionString, "Weekly", "Template");
+            this.userStore = userStore;
+            this.userStore.OnChange += Load;
 
             Templates = new List<Todo>();
 
@@ -35,20 +35,20 @@ namespace Flux.Stores
                 switch (payload.ActionType)
                 {
                     case ActionType.ADD_TEMPLATE:
-                        ((Todo)payload).UserId = UserStore.Session.UserId;
-                        bool success = await Commands.AddOne((Todo)payload);
+                        ((Todo)payload).UserId = this.userStore.Session.UserId;
+                        bool success = await commands.AddOne((Todo)payload);
                         if (success)
                             Templates.Add((Todo)payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.DELETE_TEMPLATE:
-                        await Commands.RemoveOne((Todo)payload);
+                        await commands.RemoveOne((Todo)payload);
                         Templates.Remove((Todo)payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_TEMPLATE:
-                        await Commands.ReplaceOne((Todo)payload);
-                        Templates = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
+                        await commands.ReplaceOne((Todo)payload);
+                        Templates = await queries.GetAll(x => x.UserId, this.userStore.Session?.UserId);
                         OnChange?.Invoke();
                         break;
                 }
@@ -58,7 +58,7 @@ namespace Flux.Stores
 
         public async void Load()
         {
-            Templates = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
+            Templates = await queries.GetAll(x => x.UserId, userStore.Session?.UserId);
         }
     }
 }

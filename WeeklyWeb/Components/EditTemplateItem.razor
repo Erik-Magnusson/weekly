@@ -1,4 +1,4 @@
-﻿@inject IDispatcher Dispatcher
+﻿@inject IDispatcher dispatcher
 <div class="p-2 border-bottom border-dark">
     @if(isEditing)
     {
@@ -45,19 +45,19 @@
     {
         Item.ActionType = ActionType.UPDATE_TEMPLATE;
         isEditing = false;
-        Dispatcher.Dispatch(Item);
+        dispatcher.Dispatch(Item);
     }
 
     private void AddTodo()
     {
         Item.ActionType = ActionType.ADD_TODO;
-        Dispatcher.Dispatch(new Todo(Item));
+        dispatcher.Dispatch(new Todo(Item));
     }
 
     private void DeleteTemplate()
     {
         Item.ActionType = ActionType.DELETE_TEMPLATE;
-        Dispatcher.Dispatch(Item);
+        dispatcher.Dispatch(Item);
     }
 
 

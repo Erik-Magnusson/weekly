@@ -1,4 +1,4 @@
-﻿@inject IDispatcher Dispatcher
+﻿@inject IDispatcher dispatcher
 <div class="p-2 border-bottom border-top mt-4 bg-light border-dark">
     <h5 class="text-sm-start">New Todo</h5>
     <EditForm class="d-flex align-items-center justify-content-between" Model=@template OnSubmit=@AddNewTemplate>
@@ -32,7 +32,7 @@
     private void AddNewTemplate()
     {
         var newTemplate = new Todo(template);
-        Dispatcher.Dispatch(newTemplate);
+        dispatcher.Dispatch(newTemplate);
     }
 
 }

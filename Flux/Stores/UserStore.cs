@@ -15,17 +15,16 @@ namespace Flux.Stores
 {
     public class UserStore : IUserStore
     {
-        public IQueries<User> Queries { get; set; }
-        public ICommands<User> Commands { get; set; }
+        private readonly IQueries<User> queries;
+        private readonly ICommands<User> commands;
         public Action? OnChange { get; set; }
         public Session? Session { get; private set; }
         
-
         public UserStore(IDispatcher dispatchatcher, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("Weekly");
-            Queries = new Queries<User>(connectionString, "Weekly", "User");
-            Commands = new Commands<User>(connectionString, "Weekly", "User");
+            queries = new Queries<User>(connectionString, "Weekly", "User");
+            commands = new Commands<User>(connectionString, "Weekly", "User");
             Session = null;
             
 
@@ -51,7 +50,7 @@ namespace Flux.Stores
 
         private async Task<Session?> NewUser(User user)
         {
-            var existingUser = await Queries.GetOne(x => x.Username, user.Username);
+            var existingUser = await queries.GetOne(x => x.Username, user.Username);
             if (existingUser != null)
             {
                 return null;
@@ -67,7 +66,7 @@ namespace Flux.Stores
             user.Salt = Convert.ToHexString(salt);
             user.Password = Convert.ToHexString(encryptedPassword);
 
-            bool success = await Commands.AddOne(user);
+            bool success = await commands.AddOne(user);
             if (success)
                 return new Session
                 {
@@ -80,7 +79,7 @@ namespace Flux.Stores
         private async Task<Session?> LoginUser(User userToAuthenticate)
         {
        
-            User user = await Queries.GetOne(x => x.Username, userToAuthenticate.Username);
+            User user = await queries.GetOne(x => x.Username, userToAuthenticate.Username);
             if (user == null)
             {
                 return null;

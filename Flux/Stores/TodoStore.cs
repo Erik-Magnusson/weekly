@@ -8,9 +8,9 @@ namespace Flux.Stores
 {
     public class TodoStore : ITodoStore
     {
-        private IUserStore UserStore { get; set; }
-        private IQueries<Todo> Queries { get; set; }
-        private ICommands<Todo> Commands { get; set; }
+        private readonly IUserStore userStore;
+        private readonly IQueries<Todo> queries;
+        private readonly ICommands<Todo> commands;
         public IList<Todo> Todos { get; private set; }  
         public int Year { get; private set; }
         public int Week { get; private set; }
@@ -20,14 +20,13 @@ namespace Flux.Stores
 
         private Calendar calendar;
 
-
         public TodoStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
         {
             var connectionString = configuration.GetConnectionString("Weekly");
-            Queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
-            Commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
-            UserStore = userStore;
-            UserStore.OnChange += Load;
+            queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
+            commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
+            this.userStore = userStore;
+            this.userStore.OnChange += Load;
 
             CultureInfo culture = new CultureInfo("sv-SE");
             calendar = culture.Calendar;
@@ -45,10 +44,10 @@ namespace Flux.Stores
                 {
                     case ActionType.ADD_TODO:
                         var todo = (Todo)payload;
-                        todo.UserId = UserStore.Session.UserId;
+                        todo.UserId = this.userStore.Session.UserId;
                         todo.Week = Week;
                         todo.Year= Year;
-                        bool success = await Commands.AddOne(todo);
+                        bool success = await commands.AddOne(todo);
                         if(success)
                         {
                             allTodos.Add(todo);
@@ -56,12 +55,12 @@ namespace Flux.Stores
                         }
                         break;
                     case ActionType.DELETE_TODO:
-                        await Commands.RemoveOne((Todo)payload);
+                        await commands.RemoveOne((Todo)payload);
                         allTodos.Remove((Todo)payload);
                         FilterTodos();
                         break;
                     case ActionType.UPDATE_TODO:
-                        await Commands.ReplaceOne((Todo)payload);
+                        await commands.ReplaceOne((Todo)payload);
                         var idx = allTodos.IndexOf(allTodos.FirstOrDefault(x => x.Id == ((Todo)payload).Id));
                         if(idx != -1)
                         {
@@ -96,7 +95,7 @@ namespace Flux.Stores
 
         private async void Load()
         {
-            allTodos = await Queries.GetAll(x => x.UserId, UserStore.Session?.UserId);
+            allTodos = await queries.GetAll(x => x.UserId, userStore.Session?.UserId);
             FilterTodos();
         }
 
