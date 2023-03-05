@@ -11,45 +11,43 @@ namespace Web.Server.Controllers
     public class TemplateController : ControllerBase
     {
 
-        private readonly IQueries<Todo> queries;
-        private readonly ICommands<Todo> commands;
+        private readonly IQueries<Template> queries;
+        private readonly ICommands<Template> commands;
 
         public TemplateController(IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("Weekly");
-            queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
-            commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
+            queries = new Queries<Template>(connectionString, "Weekly", "Template");
+            commands = new Commands<Template>(connectionString, "Weekly", "Template");
         }
-        // GET: api/<TemplateController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        // GET: api/<TemplateController>/userId
+        [HttpGet("{userId}")]
+        public async Task<IEnumerable<Template>> Get(Guid userId)
         {
-            return new string[] { "value1", "value2" };
+            var result = await queries.GetAll(x => x.UserId, userId);
+            return result;
         }
 
-        // GET api/<TemplateController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
 
         // POST api/<TemplateController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task Post([FromBody] Template template)
         {
+            await commands.AddOne(template);
         }
 
         // PUT api/<TemplateController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task Put([FromBody] Template template)
         {
+            await commands.ReplaceOne(template);
         }
 
         // DELETE api/<TemplateController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async void Delete(string id)
         {
+            await commands.RemoveOne(x => x.Id, id);
         }
     }
 }

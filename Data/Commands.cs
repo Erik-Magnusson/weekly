@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Models;
+using System.Linq.Expressions;
 
 namespace Data
 {
@@ -34,6 +35,12 @@ namespace Data
         public async Task<bool> RemoveOne(T item)
         {
             var filter = Builders<T>.Filter.Eq(g => g.Id, item.Id);
+            var result = await collection.DeleteOneAsync(filter);
+            return result.IsAcknowledged;
+        }
+        public async Task<bool> RemoveOne<U>(Expression<Func<T, U>> expression, U value)
+        {
+            var filter = Builders<T>.Filter.Eq(expression, value);
             var result = await collection.DeleteOneAsync(filter);
             return result.IsAcknowledged;
         }

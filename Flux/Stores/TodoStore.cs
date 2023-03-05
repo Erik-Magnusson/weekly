@@ -3,28 +3,29 @@ using Flux.Dispatchables;
 using Data;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
+using Data.Models;
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace Flux.Stores
 {
     public class TodoStore : ITodoStore
     {
+
+        private readonly HttpClient httpClient;
         private readonly IUserStore userStore;
-        private readonly IQueries<TodoDispatchable> queries;
-        private readonly ICommands<TodoDispatchable> commands;
-        public IList<TodoDispatchable> Todos { get; private set; }  
+        public IList<Todo> Todos { get; private set; }  
         public int Year { get; private set; }
         public int Week { get; private set; }
         public Action? OnChange { get; set; }
 
-        private IList<TodoDispatchable> allTodos;
+        private IList<Todo> allTodos;
 
         private Calendar calendar;
 
         public TodoStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
         {
-            var connectionString = configuration.GetConnectionString("Weekly");
-            queries = new Queries<TodoDispatchable>(connectionString, "Weekly", "Todo");
-            commands = new Commands<TodoDispatchable>(connectionString, "Weekly", "Todo");
+            httpClient = new HttpClient();
             this.userStore = userStore;
             this.userStore.OnChange += Load;
 
@@ -34,7 +35,7 @@ namespace Flux.Stores
             Week = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFullWeek, DateTime.Now.DayOfWeek);
             
 
-            allTodos = Todos = new List<TodoDispatchable>();
+            allTodos = Todos = new List<Todo>();
 
             Load();
 
@@ -43,48 +44,75 @@ namespace Flux.Stores
                 switch (payload.ActionType)
                 {
                     case ActionType.ADD_TODO:
-                        var todo = (TodoDispatchable)payload;
-                        todo.UserId = this.userStore.Session.UserId;
-                        todo.Week = Week;
-                        todo.Year= Year;
-                        bool success = await commands.AddOne(todo);
-                        if(success)
-                        {
-                            allTodos.Add(todo);
-                            FilterTodos();
-                        }
+                        await AddTodo(((Dispatchable<Todo>)payload).Value);
                         break;
                     case ActionType.DELETE_TODO:
-                        await commands.RemoveOne((TodoDispatchable)payload);
-                        allTodos.Remove((TodoDispatchable)payload);
-                        FilterTodos();
+                        await DeleteTodo(((Dispatchable<Todo>)payload).Value);
                         break;
                     case ActionType.UPDATE_TODO:
-                        await commands.ReplaceOne((TodoDispatchable)payload);
-                        var idx = allTodos.IndexOf(allTodos.FirstOrDefault(x => x.Id == ((TodoDispatchable)payload).Id));
-                        if(idx != -1)
-                        {
-                            allTodos[idx] = (TodoDispatchable)payload;
-                            FilterTodos();
-                        }
+                        await UpdateTodo(((Dispatchable<Todo>)payload).Value);
                         break;
                     case ActionType.UPDATE_WEEK:
-                        Week = ((Week)payload).WeekNr;
-                        if (Week == 0)
-                        {
-                            Year--;
-                            Week = 52;
-                        }
-                        if (Week > 52)
-                        {
-                            Year++;
-                            Week = 1;
-                        }
-                        FilterTodos();
+                        Week = (((Dispatchable<Week>)payload).Value).WeekNr;
+                        UpdateWeek();
                         break;
                 }
                 return;
             };
+        }
+
+        private async Task AddTodo(Todo todo)
+        {
+            todo.UserId = this.userStore.Session.UserId;
+            todo.Week = Week;
+            todo.Year = Year;
+            var response = await httpClient.PostAsJsonAsync<Todo>("/api/todo", todo);
+            if (response.IsSuccessStatusCode)
+            {
+                allTodos.Add(todo);
+                FilterTodos();
+            }
+        }
+
+        private async Task DeleteTodo(Todo todo)
+        {
+            var response = await httpClient.DeleteAsync($"/api/todo/{todo.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                allTodos.Remove(todo);
+                FilterTodos();
+            }
+           
+        }
+
+        private async Task UpdateTodo(Todo todo)
+        {
+            var response = await httpClient.PutAsJsonAsync<Todo>($"/api/todo", todo);
+            if (response.IsSuccessStatusCode)
+            {
+                var idx = allTodos.IndexOf(allTodos.FirstOrDefault(x => x.Id == todo.Id));
+                if (idx != -1)
+                {
+                    allTodos[idx] = todo;
+                    FilterTodos();
+                }
+            }
+            
+        }
+
+        private void UpdateWeek()
+        {
+            if (Week == 0)
+            {
+                Year--;
+                Week = 52;
+            }
+            if (Week > 52)
+            {
+                Year++;
+                Week = 1;
+            }
+            FilterTodos();
         }
 
         private void FilterTodos()
@@ -95,7 +123,8 @@ namespace Flux.Stores
 
         private async void Load()
         {
-            allTodos = await queries.GetAll(x => x.UserId, userStore.Session?.UserId);
+            var response = await httpClient.GetAsync($"/api/todo/{userStore.Session?.UserId}");
+            allTodos = await response.Content.ReadFromJsonAsync<IList<Todo>>();
             FilterTodos();
         }
 

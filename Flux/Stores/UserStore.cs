@@ -23,10 +23,8 @@ namespace Flux.Stores
         
         public UserStore(IDispatcher dispatcher)
         {
-            httpClient = new HttpClient();
-           
-            Session = null;
-            
+            httpClient = new HttpClient();    
+            Session = null;    
 
             dispatcher.Action += async payload =>
             {
@@ -50,7 +48,7 @@ namespace Flux.Stores
 
         private async Task<Session?> NewUser(User user)
         {
-            var response = await httpClient.GetAsync($"/user?username={user.Username}");
+            var response = await httpClient.GetAsync($"/api/user/{user.Username}");
             var existingUser = await response.Content.ReadFromJsonAsync<User>();
             if (existingUser != null)
             {
@@ -81,7 +79,7 @@ namespace Flux.Stores
         private async Task<Session?> LoginUser(User userToAuthenticate)
         {
        
-            var response = await httpClient.GetAsync($"/user?username={userToAuthenticate.Username}");
+            var response = await httpClient.GetAsync($"/api/user/{userToAuthenticate.Username}");
             var user = await response.Content.ReadFromJsonAsync<User>();
             if (user == null)
             {

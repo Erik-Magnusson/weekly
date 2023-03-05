@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Models;
 
 namespace Flux.Stores
 {
     public interface ITemplateStore : IStore
     {
-        IList<TodoDispatchable> Templates { get; }
+        IList<Template> Templates { get; }
 
     }
 }

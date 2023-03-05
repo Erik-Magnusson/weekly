@@ -7,26 +7,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Models;
+using System.Net.Http.Json;
 
 namespace Flux.Stores
 {
     public class TemplateStore : ITemplateStore
     {
         private readonly IUserStore userStore;
-        private readonly IQueries<TodoDispatchable> queries;
-        private readonly ICommands<TodoDispatchable> commands;
-        public IList<TodoDispatchable> Templates { get; private set; }
+        private readonly HttpClient httpClient;
+        public IList<Template> Templates { get; private set; }
         public Action? OnChange { get; set; }
 
-        public TemplateStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
+        public TemplateStore(IDispatcher dispatcher, IUserStore userStore)
         {
-            var connectionString = configuration.GetConnectionString("Weekly");
-            queries = new Queries<TodoDispatchable>(connectionString, "Weekly", "Template");
-            commands = new Commands<TodoDispatchable>(connectionString, "Weekly", "Template");
+            httpClient = new HttpClient();
             this.userStore = userStore;
             this.userStore.OnChange += Load;
 
-            Templates = new List<TodoDispatchable>();
+            Templates = new List<Template>();
 
             Load();
 
@@ -35,30 +34,59 @@ namespace Flux.Stores
                 switch (payload.ActionType)
                 {
                     case ActionType.ADD_TEMPLATE:
-                        ((TodoDispatchable)payload).UserId = this.userStore.Session.UserId;
-                        bool success = await commands.AddOne((TodoDispatchable)payload);
-                        if (success)
-                            Templates.Add((TodoDispatchable)payload);
-                        OnChange?.Invoke();
+                        await AddTemplate(((Dispatchable<Template>)payload).Value);
                         break;
                     case ActionType.DELETE_TEMPLATE:
-                        await commands.RemoveOne((TodoDispatchable)payload);
-                        Templates.Remove((TodoDispatchable)payload);
-                        OnChange?.Invoke();
+                        await DeleteTemplate(((Dispatchable<Template>)payload).Value);
                         break;
                     case ActionType.UPDATE_TEMPLATE:
-                        await commands.ReplaceOne((TodoDispatchable)payload);
-                        Templates = await queries.GetAll(x => x.UserId, this.userStore.Session?.UserId);
-                        OnChange?.Invoke();
+                        await UpdateTemplate(((Dispatchable<Template>)payload).Value); 
                         break;
                 }
             };
 
         }
 
+        private async Task AddTemplate(Template template)
+        {
+            template.UserId = this.userStore.Session.UserId;
+            var response = await httpClient.PostAsJsonAsync<Template>("/api/template", template);
+            if (response.IsSuccessStatusCode)
+            {
+                Templates.Add(template);
+            }
+            OnChange?.Invoke();
+        }
+
+        private async Task DeleteTemplate(Template template)
+        {
+            var response = await httpClient.DeleteAsync($"/api/todo/{template.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Templates.Remove(template);
+            }
+            OnChange?.Invoke();
+        }
+
+        private async Task UpdateTemplate(Template template)
+        {
+            var response = await httpClient.PutAsJsonAsync<Template>($"/api/todo", template);
+            if (response.IsSuccessStatusCode)
+            {
+                var idx = Templates.IndexOf(Templates.FirstOrDefault(x => x.Id == template.Id));
+                if (idx != -1)
+                {
+                    Templates[idx] = template;
+                }
+            }
+   
+            OnChange?.Invoke();
+        }
+
         public async void Load()
         {
-            Templates = await queries.GetAll(x => x.UserId, userStore.Session?.UserId);
+            var response = await httpClient.GetAsync($"/api/template/{userStore.Session?.UserId}");
+            Templates = await response.Content.ReadFromJsonAsync<IList<Template>>();
         }
     }
 }

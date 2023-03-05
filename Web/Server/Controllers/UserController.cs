@@ -11,45 +11,38 @@ namespace Web.Server.Controllers
     public class UserController : ControllerBase
     {
 
-        private readonly IQueries<Todo> queries;
-        private readonly ICommands<Todo> commands;
+        private readonly IQueries<User> queries;
+        private readonly ICommands<User> commands;
 
         public UserController(IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("Weekly");
-            queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
-            commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
+            queries = new Queries<User>(connectionString, "Weekly", "User");
+            commands = new Commands<User>(connectionString, "Weekly", "User");
         }
-        // GET: api/<UserController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+    
+        // GET api/<UserController>/username
+        [HttpGet("{username}")]
+        public async Task<User> Get(string username)
         {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<UserController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
+            var result = await queries.GetAll((x => x.Username), username);
+            return result.FirstOrDefault();
         }
 
         // POST api/<UserController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task Post([FromBody] User user)
         {
+            await commands.AddOne(user);
         }
 
         // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task Put([FromBody] User user)
         {
+            await commands.ReplaceOne(user);
         }
 
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+
     }
 }

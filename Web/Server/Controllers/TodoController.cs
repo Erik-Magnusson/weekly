@@ -20,36 +20,34 @@ namespace Web.Server.Controllers
             queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
             commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
         }
-        // GET: api/<TodoController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        // GET: api/<TodoController>/userId
+        [HttpGet("{userId}")]
+        public async Task<IEnumerable<Todo>> Get(Guid userId)
         {
-            return new string[] { "value1", "value2" };
+            var result = await queries.GetAll(x => x.UserId, userId);
+            return result;
         }
 
-        // GET api/<TodoController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
+  
         // POST api/<TodoController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task Post([FromBody] Todo todo)
         {
+            await commands.AddOne(todo);
         }
 
         // PUT api/<TodoController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task Put([FromBody] Todo todo)
         {
+            await commands.ReplaceOne(todo);
         }
 
         // DELETE api/<TodoController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task Delete(string id)
         {
+            await commands.RemoveOne(x => x.Id, id);
         }
     }
 }
