@@ -61,7 +61,7 @@
         templateStore.OnChange -= StateHasChanged;
     }
 
-    private void DeleteTodo(Todo todo)
+    private void DeleteTodo(TodoDispatchable todo)
     {
         todo.ActionType = ActionType.DELETE_TODO;
         dispatcher.Dispatch(todo);

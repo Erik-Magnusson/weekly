@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace Flux.Dispatchables
 {
-    public class Week : IDispatchable
+    public class Dispatchable<T> : IDispatchable
     {
         public ActionType ActionType { get; set; }
-        public int WeekNr { get; set; }
-        public Week(int weekNr)
-        {
-            ActionType = ActionType.UPDATE_WEEK;
-            WeekNr = weekNr;
-        }
+
+        public T Value { get; set; }
     }
 }

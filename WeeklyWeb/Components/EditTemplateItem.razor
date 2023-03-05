@@ -36,7 +36,7 @@
 
 @code {
     [Parameter]
-    public required Todo Item { get; set; }
+    public required TodoDispatchable Item { get; set; }
 
 
     private bool isEditing;
@@ -51,7 +51,7 @@
     private void AddTodo()
     {
         Item.ActionType = ActionType.ADD_TODO;
-        dispatcher.Dispatch(new Todo(Item));
+        dispatcher.Dispatch(new TodoDispatchable(Item));
     }
 
     private void DeleteTemplate()

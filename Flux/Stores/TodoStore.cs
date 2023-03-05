@@ -9,22 +9,22 @@ namespace Flux.Stores
     public class TodoStore : ITodoStore
     {
         private readonly IUserStore userStore;
-        private readonly IQueries<Todo> queries;
-        private readonly ICommands<Todo> commands;
-        public IList<Todo> Todos { get; private set; }  
+        private readonly IQueries<TodoDispatchable> queries;
+        private readonly ICommands<TodoDispatchable> commands;
+        public IList<TodoDispatchable> Todos { get; private set; }  
         public int Year { get; private set; }
         public int Week { get; private set; }
         public Action? OnChange { get; set; }
 
-        private IList<Todo> allTodos;
+        private IList<TodoDispatchable> allTodos;
 
         private Calendar calendar;
 
         public TodoStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
         {
             var connectionString = configuration.GetConnectionString("Weekly");
-            queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
-            commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
+            queries = new Queries<TodoDispatchable>(connectionString, "Weekly", "Todo");
+            commands = new Commands<TodoDispatchable>(connectionString, "Weekly", "Todo");
             this.userStore = userStore;
             this.userStore.OnChange += Load;
 
@@ -34,7 +34,7 @@ namespace Flux.Stores
             Week = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFullWeek, DateTime.Now.DayOfWeek);
             
 
-            allTodos = Todos = new List<Todo>();
+            allTodos = Todos = new List<TodoDispatchable>();
 
             Load();
 
@@ -43,7 +43,7 @@ namespace Flux.Stores
                 switch (payload.ActionType)
                 {
                     case ActionType.ADD_TODO:
-                        var todo = (Todo)payload;
+                        var todo = (TodoDispatchable)payload;
                         todo.UserId = this.userStore.Session.UserId;
                         todo.Week = Week;
                         todo.Year= Year;
@@ -55,16 +55,16 @@ namespace Flux.Stores
                         }
                         break;
                     case ActionType.DELETE_TODO:
-                        await commands.RemoveOne((Todo)payload);
-                        allTodos.Remove((Todo)payload);
+                        await commands.RemoveOne((TodoDispatchable)payload);
+                        allTodos.Remove((TodoDispatchable)payload);
                         FilterTodos();
                         break;
                     case ActionType.UPDATE_TODO:
-                        await commands.ReplaceOne((Todo)payload);
-                        var idx = allTodos.IndexOf(allTodos.FirstOrDefault(x => x.Id == ((Todo)payload).Id));
+                        await commands.ReplaceOne((TodoDispatchable)payload);
+                        var idx = allTodos.IndexOf(allTodos.FirstOrDefault(x => x.Id == ((TodoDispatchable)payload).Id));
                         if(idx != -1)
                         {
-                            allTodos[idx] = (Todo)payload;
+                            allTodos[idx] = (TodoDispatchable)payload;
                             FilterTodos();
                         }
                         break;

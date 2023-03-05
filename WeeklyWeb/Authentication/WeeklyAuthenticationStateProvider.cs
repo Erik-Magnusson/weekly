@@ -27,7 +27,7 @@ namespace WeeklyWeb.Authentication
         {
             try
             {
-                var sessionStorageResult = await sessionStorage.GetAsync<Session>("weeklysession");
+                var sessionStorageResult = await sessionStorage.GetAsync<SessionDispatchable>("weeklysession");
                 var session = sessionStorageResult.Success ? sessionStorageResult.Value : null;
                 if (session == null)
                 {
@@ -49,7 +49,7 @@ namespace WeeklyWeb.Authentication
 
         public void Login(string username, string password)
         {
-            var user = new User
+            var user = new UserDispatchable
             {
                 ActionType = ActionType.LOGIN_USER,
                 Username = username,
@@ -60,7 +60,7 @@ namespace WeeklyWeb.Authentication
 
         public void Logout()
         {
-            var user = new User
+            var user = new UserDispatchable
             {
                 ActionType = ActionType.LOGOUT_USER,
             };
@@ -69,7 +69,7 @@ namespace WeeklyWeb.Authentication
 
         public void Register(string username, string password)
         {
-            var user = new User
+            var user = new UserDispatchable
             {
                 ActionType = ActionType.NEW_USER,
                 Username = username,
@@ -96,7 +96,7 @@ namespace WeeklyWeb.Authentication
            
         }
 
-        private async Task SetSession(Session session)
+        private async Task SetSession(SessionDispatchable session)
         {
             try
             {

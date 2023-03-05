@@ -20,7 +20,7 @@
 
 @code {
 
-    private Todo template = new Todo()
+    private TodoDispatchable template = new TodoDispatchable()
     {
         ActionType = ActionType.ADD_TEMPLATE,
         Text = string.Empty,
@@ -31,7 +31,7 @@
 
     private void AddNewTemplate()
     {
-        var newTemplate = new Todo(template);
+        var newTemplate = new TodoDispatchable(template);
         dispatcher.Dispatch(newTemplate);
     }
 

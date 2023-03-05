@@ -13,20 +13,20 @@ namespace Flux.Stores
     public class TemplateStore : ITemplateStore
     {
         private readonly IUserStore userStore;
-        private readonly IQueries<Todo> queries;
-        private readonly ICommands<Todo> commands;
-        public IList<Todo> Templates { get; private set; }
+        private readonly IQueries<TodoDispatchable> queries;
+        private readonly ICommands<TodoDispatchable> commands;
+        public IList<TodoDispatchable> Templates { get; private set; }
         public Action? OnChange { get; set; }
 
         public TemplateStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
         {
             var connectionString = configuration.GetConnectionString("Weekly");
-            queries = new Queries<Todo>(connectionString, "Weekly", "Template");
-            commands = new Commands<Todo>(connectionString, "Weekly", "Template");
+            queries = new Queries<TodoDispatchable>(connectionString, "Weekly", "Template");
+            commands = new Commands<TodoDispatchable>(connectionString, "Weekly", "Template");
             this.userStore = userStore;
             this.userStore.OnChange += Load;
 
-            Templates = new List<Todo>();
+            Templates = new List<TodoDispatchable>();
 
             Load();
 
@@ -35,19 +35,19 @@ namespace Flux.Stores
                 switch (payload.ActionType)
                 {
                     case ActionType.ADD_TEMPLATE:
-                        ((Todo)payload).UserId = this.userStore.Session.UserId;
-                        bool success = await commands.AddOne((Todo)payload);
+                        ((TodoDispatchable)payload).UserId = this.userStore.Session.UserId;
+                        bool success = await commands.AddOne((TodoDispatchable)payload);
                         if (success)
-                            Templates.Add((Todo)payload);
+                            Templates.Add((TodoDispatchable)payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.DELETE_TEMPLATE:
-                        await commands.RemoveOne((Todo)payload);
-                        Templates.Remove((Todo)payload);
+                        await commands.RemoveOne((TodoDispatchable)payload);
+                        Templates.Remove((TodoDispatchable)payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_TEMPLATE:
-                        await commands.ReplaceOne((Todo)payload);
+                        await commands.ReplaceOne((TodoDispatchable)payload);
                         Templates = await queries.GetAll(x => x.UserId, this.userStore.Session?.UserId);
                         OnChange?.Invoke();
                         break;

@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver.Linq;
 using System.Linq.Expressions;
-
+using Data.Models;
 namespace Data
 {
     public class Queries<T> : IQueries<T> where T : DataEntityBase

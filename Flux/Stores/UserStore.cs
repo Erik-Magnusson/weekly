@@ -10,30 +10,30 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Collections;
+using Data.Models;
+using System.Net.Http.Json;
 
 namespace Flux.Stores
 {
     public class UserStore : IUserStore
     {
-        private readonly IQueries<User> queries;
-        private readonly ICommands<User> commands;
+        private readonly HttpClient httpClient;
         public Action? OnChange { get; set; }
         public Session? Session { get; private set; }
         
-        public UserStore(IDispatcher dispatchatcher, IConfiguration configuration)
+        public UserStore(IDispatcher dispatcher)
         {
-            var connectionString = configuration.GetConnectionString("Weekly");
-            queries = new Queries<User>(connectionString, "Weekly", "User");
-            commands = new Commands<User>(connectionString, "Weekly", "User");
+            httpClient = new HttpClient();
+           
             Session = null;
             
 
-            dispatchatcher.Action += async payload =>
+            dispatcher.Action += async payload =>
             {
                 switch (payload.ActionType)
                 {
                     case ActionType.LOGIN_USER:
-                        Session = await LoginUser((User)payload);
+                        Session = await LoginUser(((Dispatchable<User>)payload).Value);
                         OnChange?.Invoke();
                         break;
                     case ActionType.LOGOUT_USER:
@@ -41,7 +41,7 @@ namespace Flux.Stores
                         OnChange?.Invoke();
                         break;
                     case ActionType.NEW_USER:
-                        Session = await NewUser((User)payload);
+                        Session = await NewUser(((Dispatchable<User>)payload).Value);
                         OnChange?.Invoke();
                         break;
                 }
@@ -50,7 +50,8 @@ namespace Flux.Stores
 
         private async Task<Session?> NewUser(User user)
         {
-            var existingUser = await queries.GetOne(x => x.Username, user.Username);
+            var response = await httpClient.GetAsync($"/user?username={user.Username}");
+            var existingUser = await response.Content.ReadFromJsonAsync<User>();
             if (existingUser != null)
             {
                 return null;
@@ -66,8 +67,9 @@ namespace Flux.Stores
             user.Salt = Convert.ToHexString(salt);
             user.Password = Convert.ToHexString(encryptedPassword);
 
-            bool success = await commands.AddOne(user);
-            if (success)
+            response = await httpClient.PostAsJsonAsync<User>("/api/user", user);
+
+            if (response.IsSuccessStatusCode)
                 return new Session
                 {
                     UserId = user.UserId,
@@ -79,7 +81,8 @@ namespace Flux.Stores
         private async Task<Session?> LoginUser(User userToAuthenticate)
         {
        
-            User user = await queries.GetOne(x => x.Username, userToAuthenticate.Username);
+            var response = await httpClient.GetAsync($"/user?username={userToAuthenticate.Username}");
+            var user = await response.Content.ReadFromJsonAsync<User>();
             if (user == null)
             {
                 return null;
