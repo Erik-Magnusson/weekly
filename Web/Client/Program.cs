@@ -2,6 +2,7 @@ using Flux.Dispatcher;
 using Flux.Stores;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using System.Net.Http;
 using Web.Client;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
