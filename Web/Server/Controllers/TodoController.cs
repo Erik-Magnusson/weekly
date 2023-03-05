@@ -22,9 +22,9 @@ namespace Web.Server.Controllers
         }
         // GET: api/<TodoController>/userId
         [HttpGet("{userId}")]
-        public async Task<IEnumerable<Todo>> Get(Guid userId)
+        public async Task<IEnumerable<Todo>> Get(string userId)
         {
-            var result = await queries.GetAll(x => x.UserId, userId);
+            var result = await queries.GetAll(x => x.UserId, new Guid(userId));
             return result;
         }
 

@@ -22,9 +22,9 @@ namespace Web.Server.Controllers
         }
         // GET: api/<TemplateController>/userId
         [HttpGet("{userId}")]
-        public async Task<IEnumerable<Template>> Get(Guid userId)
+        public async Task<IEnumerable<Template>> Get(string userId)
         {
-            var result = await queries.GetAll(x => x.UserId, userId);
+            var result = await queries.GetAll(x => x.UserId, new Guid(userId));
             return result;
         }
 

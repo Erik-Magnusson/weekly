@@ -43,6 +43,12 @@ namespace Web.Server.Controllers
             await commands.ReplaceOne(user);
         }
 
+        // DELETE api/<TodoController>/5
+        [HttpDelete("{id}")]
+        public async Task Delete(string id)
+        {
+            await commands.RemoveOne(x => x.Id, id);
+        }
 
     }
 }
