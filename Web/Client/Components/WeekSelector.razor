@@ -1,0 +1,37 @@
+﻿@inject IDispatcher dispatcher
+
+<div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-around mt-2 mb-2 align-items-center">
+        <div class="material-icons">
+            <button class="btn btn-primary" @onclick="() => UpdateWeek(CurrentWeek - 1)">chevron_left</button>
+        </div>
+        <div class="ms-2 me-2">
+            <h4 class="fw-bold mb-0">Week @CurrentWeek - @CurrentYear</h4>
+        </div>
+        <div class="material-icons">
+            <button class="btn btn-primary" @onclick="() => UpdateWeek(CurrentWeek + 1)">chevron_right</button>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public int CurrentWeek { get; set; }
+
+    [Parameter]
+    public int CurrentYear { get; set; }
+
+    private void UpdateWeek(int newWeekNr)
+    {
+        var dispatchable = new Dispatchable<Week>
+        {
+            ActionType = ActionType.UPDATE_WEEK,
+            Value = new Week(newWeekNr)
+        };
+        dispatcher.Dispatch(dispatchable);
+
+    }
+
+
+}

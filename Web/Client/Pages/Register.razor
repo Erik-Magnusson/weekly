@@ -1,0 +1,58 @@
+﻿@page "/register"
+@inject NavigationManager navManager
+@inject IUserStore userStore
+@using System.ComponentModel.DataAnnotations
+
+<div class="container">
+    <div class="row pt-5">
+        <EditForm class="col-6 offset-3" Model=@credentials OnValidSubmit="@RegisterUser">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group m-1">
+                <InputText @bind-Value=credentials.Username class="form-control" id="username" placeholder="Username" />
+            </div>
+            <div class="form-group m-1">
+                <InputText @bind-Value=credentials.Password type="password" class="form-control" id="password" placeholder="Password" />
+            </div>
+            <div class="m-1 mt-2">
+                <input type="submit" class="btn btn-primary" value="Register" />
+            </div>
+        </EditForm>
+    </div>
+</div>
+@code {
+
+    private class Credentials
+    {
+        [Required]
+        [RegularExpression(@"^[a-zA-Z0-9_-]*$", ErrorMessage = "Username contains invalid characters.")]
+        public string Username { get; set; }
+        [Required]
+        [MinLength(8, ErrorMessage = "Password needs to be at least 8 characters.")]
+        public string Password { get; set; }
+    }
+
+    private Credentials credentials = new Credentials();
+
+    private void RegisterUser()
+    {
+        //var weeklyAuth = (WeeklyAuthenticationStateProvider)authenticationStateProvider;
+        //weeklyAuth.Register(credentials.Username, credentials.Password);
+    }
+
+    private void Update()
+    {
+        if (userStore.Session != null)
+        {
+            navManager.NavigateTo("/", true);
+        }
+        
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        userStore.OnChange += Update;
+    }
+
+}

@@ -23,9 +23,9 @@ namespace Flux.Stores
 
         private Calendar calendar;
 
-        public TodoStore(IDispatcher dispatcher, IConfiguration configuration, IUserStore userStore)
+        public TodoStore(IDispatcher dispatcher, IUserStore userStore, HttpClient httpClient)
         {
-            httpClient = new HttpClient();
+            this.httpClient = httpClient;
             this.userStore = userStore;
             this.userStore.OnChange += Load;
 
@@ -44,7 +44,7 @@ namespace Flux.Stores
                 switch (payload.ActionType)
                 {
                     case ActionType.ADD_TODO:
-                        await AddTodo(((Dispatchable<Todo>)payload).Value);
+                        await AddTodo(((Dispatchable<Template>)payload).Value);
                         break;
                     case ActionType.DELETE_TODO:
                         await DeleteTodo(((Dispatchable<Todo>)payload).Value);
@@ -61,11 +61,19 @@ namespace Flux.Stores
             };
         }
 
-        private async Task AddTodo(Todo todo)
+        private async Task AddTodo(Template template)
         {
-            todo.UserId = this.userStore.Session.UserId;
-            todo.Week = Week;
-            todo.Year = Year;
+            var todo = new Todo()
+            {
+                UserId = this.userStore.Session.UserId,
+                Text= template.Text,
+                NrDone = 0,
+                NrTotal = template.NrTotal,
+                Unit = template.Unit,
+                Week = Week,
+                Year = Year,
+            };
+
             var response = await httpClient.PostAsJsonAsync<Todo>("/api/todo", todo);
             if (response.IsSuccessStatusCode)
             {

@@ -1,0 +1,57 @@
+﻿@inject IDispatcher dispatcher
+
+<p class="col-4 mt-1 fw-bold">@Item.Text</p>
+
+<div class="col-4 d-flex align-items-start">
+    <div class="m-1 py-1 text-lowercase fw-bold">
+        @Item.NrDone / @Item.NrTotal @Item.Unit
+    </div>
+</div>
+
+<div class="d-flex justify-content-end align-items-start col-4 mt-1">
+    <button class="btn btn-danger material-icons me-1 p-2" @onclick="UnDone">remove</button>
+    <button class="btn btn-success material-icons p-2" @onclick="Done">add</button>
+</div>
+
+<div class="col-12">
+
+    @for (int i = 0; i < Item.NrDone; i++)
+    {
+        <div class="material-icons bg-success text-white p-1 m-1 border border-dark rounded-circle">done</div>
+    }
+    @for (int i = 0; i < Item.NrTotal - Item.NrDone; i++)
+    {
+        <div class="material-icons text-secondary p-1 m-1 border border-secondary rounded-circle">close</div>
+    }
+</div>
+
+
+
+
+@code {
+
+    [Parameter]
+    public required Todo Item { get; set; }
+
+    private void Done()
+    {
+        Item.NrDone++;
+        var dispatchable = new Dispatchable<Todo>
+        {
+            ActionType = ActionType.UPDATE_TODO,
+            Value = Item
+        };
+        dispatcher.Dispatch(dispatchable);
+    }
+
+    private void UnDone()
+    {
+        Item.NrDone = Item.NrDone <= 0 ? 0 : Item.NrDone - 1;
+        var dispatchable = new Dispatchable<Todo>
+        {
+            ActionType = ActionType.UPDATE_TODO,
+            Value = Item
+        };
+        dispatcher.Dispatch(dispatchable);
+    }
+}

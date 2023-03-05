@@ -20,11 +20,15 @@ namespace Flux.Stores
         private readonly HttpClient httpClient;
         public Action? OnChange { get; set; }
         public Session? Session { get; private set; }
-        
-        public UserStore(IDispatcher dispatcher)
+
+        public UserStore(IDispatcher dispatcher, HttpClient httpClient)
         {
-            httpClient = new HttpClient();    
-            Session = null;    
+            this.httpClient = httpClient;
+            Session = new Session()
+            {
+                Username = "erik",
+                UserId = new Guid("a9feab14-ccd7-4fba-815f-673e8322f43a")
+            };
 
             dispatcher.Action += async payload =>
             {

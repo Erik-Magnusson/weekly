@@ -11,6 +11,7 @@ namespace Data.Models
     {
         public Guid UserId { get; set; }
         public string Text { get; set; }
+        public int NrTotal { get; set; }
         public TodoUnit Unit { get; set; }
     }
 }

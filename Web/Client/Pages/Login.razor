@@ -1,0 +1,62 @@
+﻿@page "/login"
+@inject NavigationManager navManager
+@inject IUserStore userStore
+
+
+<div class="container"> 
+    <div class="row pt-5">
+        <div class="col-6 offset-3">
+            @if (invalidCredentials)
+            {
+                <ul class="validation-errors">
+                    <li class="validation-message">Invalid username or password.</li>
+                </ul>
+            }
+            <div class="m-1">
+                <input @bind="username" class="form-control @(invalidCredentials ? "modified invalid" : string.Empty)" placeholder="Username" />
+            </div>
+            <div class="m-1">
+                <input @bind="password" type="password" class="form-control @(invalidCredentials ? "modified invalid" : string.Empty)" placeholder="Password" />
+            </div>
+           
+            <div class="m-1 mt-2">
+                <button @onclick="LoginUser" class="btn btn-primary">Login</button>
+            </div>
+            <div class="m-1 mt-3">
+                <p>Not a member? <a href="/register">Register.</a></p>
+            </div>
+
+        </div>
+        
+    </div>
+</div>
+@code {
+
+    private bool invalidCredentials = false;
+    private string username = string.Empty;
+    private string password = string.Empty;
+
+    private void LoginUser()
+    {
+        //var weeklyAuth = (WeeklyAuthenticationStateProvider)authenticationStateProvider;
+        //weeklyAuth.Login(username, password);
+    }
+
+    private void Update()
+    {
+        if (userStore.Session == null)
+        {
+            invalidCredentials = true;
+            InvokeAsync(() => StateHasChanged());
+            return;
+        }
+        navManager.NavigateTo("/", true);
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        userStore.OnChange += Update;
+    }
+
+}

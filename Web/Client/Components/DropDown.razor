@@ -1,0 +1,30 @@
+﻿
+<div class="@Class">
+    <div class="btn btn-primary w-100 d-flex align-items-center justify-content-between p-3"
+         @onclick="() => isOpen = !isOpen">
+        <p class="m-0">@Placeholder</p>
+        <div class="material-icons">expand_more</div>
+    </div>
+    @if(isOpen) 
+    {
+        <div class="p-2 border border-dark rounded mt-1">
+            @Options
+        </div>
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+
+    [Parameter]
+    public required RenderFragment Options { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; } = string.Empty;
+
+    private bool isOpen = false;
+
+
+}

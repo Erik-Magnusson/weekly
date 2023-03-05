@@ -19,9 +19,9 @@ namespace Flux.Stores
         public IList<Template> Templates { get; private set; }
         public Action? OnChange { get; set; }
 
-        public TemplateStore(IDispatcher dispatcher, IUserStore userStore)
+        public TemplateStore(IDispatcher dispatcher, IUserStore userStore, HttpClient httpClient)
         {
-            httpClient = new HttpClient();
+            this.httpClient = httpClient;
             this.userStore = userStore;
             this.userStore.OnChange += Load;
 

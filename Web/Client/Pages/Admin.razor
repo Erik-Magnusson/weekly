@@ -1,0 +1,73 @@
+﻿@page "/admin"
+@inject ITemplateStore templateStore
+@inject ITodoStore todoStore
+@inject IDispatcher dispatcher
+@implements IDisposable
+
+
+<div class="mt-2 p-2 bg-light border border-dark rounded">
+    <WeekSelector
+        CurrentWeek="@todoStore.Week"
+        CurrentYear="@todoStore.Year"
+    />
+    @if (todoStore.Todos.Count == 0)
+    {
+        <div class="d-flex align-items-center mt-4 mb-3 flex-column">
+            <p class="fw-bold">There are curently no items in your list. </p>
+        </div>
+    }
+    <div class="mt-3 mb-3">
+        @foreach(var todo in todoStore.Todos)
+        {
+        <div class="p-2 m-1 border border-dark rounded bg-white">
+            <div class="row">
+                <p class="col-4 m-0">@todo.Text</p>
+                <p class="col-2 m-0">@todo.NrTotal</p>
+                <p class="col-3 m-0">@todo.Unit</p>
+                <div class="col-3 d-flex justify-content-end align-items-start">
+                    <button class="btn btn-danger material-icons" @onclick="() => DeleteTodo(todo)">delete_outline</button>
+                </div>
+             </div>
+            
+        </div>
+        }
+    </div>
+</div>
+<DropDown Class="mt-3" Placeholder="Choose todo">
+    <Options>
+        @foreach(var template in templateStore.Templates)
+        {
+            <EditTemplateItem Item="@template" />
+        }
+        <NewTemplateItem/>
+    </Options>
+</DropDown>
+
+@code {
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        todoStore.OnChange += StateHasChanged;
+        templateStore.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        todoStore.OnChange -= StateHasChanged;
+        templateStore.OnChange -= StateHasChanged;
+    }
+
+    private void DeleteTodo(Todo todo)
+    {
+        var dispatchable = new Dispatchable<Todo>
+        {
+            ActionType = ActionType.DELETE_TODO,
+            Value = todo
+
+        };
+        dispatcher.Dispatch(dispatchable);
+    }
+
+}
