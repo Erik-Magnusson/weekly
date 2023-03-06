@@ -35,12 +35,15 @@ namespace Flux.Stores
                 {
                     case ActionType.ADD_TEMPLATE:
                         await AddTemplate(((Dispatchable<Template>)payload).Value);
+                        OnChange?.Invoke();
                         break;
                     case ActionType.DELETE_TEMPLATE:
                         await DeleteTemplate(((Dispatchable<Template>)payload).Value);
+                        OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_TEMPLATE:
-                        await UpdateTemplate(((Dispatchable<Template>)payload).Value); 
+                        await UpdateTemplate(((Dispatchable<Template>)payload).Value);
+                        OnChange?.Invoke();
                         break;
                 }
             };
@@ -55,7 +58,7 @@ namespace Flux.Stores
             {
                 Templates.Add(template);
             }
-            OnChange?.Invoke();
+            
         }
 
         private async Task DeleteTemplate(Template template)
@@ -65,7 +68,6 @@ namespace Flux.Stores
             {
                 Templates.Remove(template);
             }
-            OnChange?.Invoke();
         }
 
         private async Task UpdateTemplate(Template template)
@@ -79,14 +81,13 @@ namespace Flux.Stores
                     Templates[idx] = template;
                 }
             }
-   
-            OnChange?.Invoke();
         }
 
         public async void Load()
         {
             var response = await httpClient.GetAsync($"/api/template/{userStore.Session?.UserId}");
             Templates = await response.Content.ReadFromJsonAsync<IList<Template>>();
+            OnChange?.Invoke();
         }
     }
 }

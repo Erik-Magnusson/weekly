@@ -45,16 +45,19 @@ namespace Flux.Stores
                 {
                     case ActionType.ADD_TODO:
                         await AddTodo(((Dispatchable<Template>)payload).Value);
+                        OnChange?.Invoke();
                         break;
                     case ActionType.DELETE_TODO:
                         await DeleteTodo(((Dispatchable<Todo>)payload).Value);
+                        OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_TODO:
                         await UpdateTodo(((Dispatchable<Todo>)payload).Value);
+                        OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_WEEK:
-                        Week = (((Dispatchable<Week>)payload).Value).WeekNr;
-                        UpdateWeek();
+                        UpdateWeek(((Dispatchable<Week>)payload).Value);
+                        OnChange?.Invoke();
                         break;
                 }
                 return;
@@ -108,14 +111,15 @@ namespace Flux.Stores
             
         }
 
-        private void UpdateWeek()
+        private void UpdateWeek(Week week)
         {
-            if (Week == 0)
+            Week = week.WeekNr;
+            if (week.WeekNr == 0)
             {
                 Year--;
                 Week = 52;
             }
-            if (Week > 52)
+            if (week.WeekNr > 52)
             {
                 Year++;
                 Week = 1;
@@ -126,7 +130,6 @@ namespace Flux.Stores
         private void FilterTodos()
         {
             Todos = allTodos.Where(x => x.Week == Week && x.Year == Year).ToList();
-            OnChange?.Invoke();
         }
 
         private async void Load()
@@ -134,6 +137,7 @@ namespace Flux.Stores
             var response = await httpClient.GetAsync($"/api/todo/{userStore.Session?.UserId}");
             allTodos = await response.Content.ReadFromJsonAsync<IList<Todo>>();
             FilterTodos();
+            OnChange?.Invoke();
         }
 
     }
