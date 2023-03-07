@@ -3,7 +3,7 @@
 @inject ITodoStore todoStore
 @inject IDispatcher dispatcher
 @implements IDisposable
-
+@attribute [Authorize]
 
 <div class="mt-2 p-2 bg-light border border-dark rounded">
     <WeekSelector
