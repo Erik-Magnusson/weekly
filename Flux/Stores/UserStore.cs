@@ -35,7 +35,7 @@ namespace Flux.Stores
                 switch (payload.ActionType)
                 {
                     case ActionType.LOGIN_USER:
-                        Session = await LoginUser(((Dispatchable<User>)payload).Value);
+                        Session = await GetSession(((Dispatchable<Credentials>)payload).Value, "login");
                         OnChange?.Invoke();
                         break;
                     case ActionType.LOGOUT_USER:
@@ -43,67 +43,21 @@ namespace Flux.Stores
                         OnChange?.Invoke();
                         break;
                     case ActionType.NEW_USER:
-                        Session = await NewUser(((Dispatchable<User>)payload).Value);
+                        Session = await GetSession(((Dispatchable<Credentials>)payload).Value, "register");
                         OnChange?.Invoke();
                         break;
                 }
             };
         }
 
-        private async Task<Session?> NewUser(User user)
+        private async Task<Session?> GetSession(Credentials credentials, string action)
         {
-            var response = await httpClient.GetAsync($"/api/user/{user.Username}");
-            var existingUser = await response.Content.ReadFromJsonAsync<User>();
-            if (existingUser != null)
-            {
-                return null;
-            }
-
-            var random = new Random();
-            var salt = new byte[48];
-            random.NextBytes(salt);
-
-            var encryptedPassword = KeyDerivation.Pbkdf2(user.Password, salt, new KeyDerivationPrf(), 10000, 64);
-
-            user.UserId = Guid.NewGuid();
-            user.Salt = Convert.ToHexString(salt);
-            user.Password = Convert.ToHexString(encryptedPassword);
-
-            response = await httpClient.PostAsJsonAsync<User>("/api/user", user);
-
+            var response = await httpClient.PostAsJsonAsync($"/api/user/{action}", credentials);
+            Session? session = null;
             if (response.IsSuccessStatusCode)
-                return new Session
-                {
-                    UserId = user.UserId,
-                    Username = user.Username
-                };
-            return null;
+                session = await response.Content.ReadFromJsonAsync<Session?>();
+            return session;      
         }
-
-        private async Task<Session?> LoginUser(User userToAuthenticate)
-        {
-       
-            var response = await httpClient.GetAsync($"/api/user/{userToAuthenticate.Username}");
-            var user = await response.Content.ReadFromJsonAsync<User>();
-            if (user == null)
-            {
-                return null;
-            }
-
-            var salt = Convert.FromHexString(user.Salt);
-            var encryptedPassword = Convert.ToHexString(KeyDerivation.Pbkdf2(userToAuthenticate.Password, salt, new KeyDerivationPrf(), 10000, 64));
-
-            if (encryptedPassword == user.Password)
-            {
-                return new Session
-                {
-                    Username = user.Username,
-                    UserId = user.UserId
-                };
-            }
-            return null;         
-        }
-
 
     }
 }

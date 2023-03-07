@@ -1,6 +1,7 @@
 ﻿using Data.Models;
 using Data;
 using Microsoft.AspNetCore.Mvc;
+using Web.Server.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,42 +14,35 @@ namespace Web.Server.Controllers
 
         private readonly IQueries<User> queries;
         private readonly ICommands<User> commands;
+        private readonly UserService userService;
+        private readonly JwtService jwtService;
 
-        public UserController(IConfiguration configuration)
+        public UserController(IConfiguration configuration, UserService userService, JwtService jwtService)
         {
             var connectionString = configuration.GetConnectionString("Weekly");
             queries = new Queries<User>(connectionString, "Weekly", "User");
             commands = new Commands<User>(connectionString, "Weekly", "User");
-        }
-    
-        // GET api/<UserController>/username
-        [HttpGet("{username}")]
-        public async Task<User> Get(string username)
-        {
-            var result = await queries.GetAll((x => x.Username), username);
-            return result.FirstOrDefault();
+            this.userService = userService;
+            this.jwtService = jwtService;
         }
 
-        // POST api/<UserController>
+        [Route("login")]
         [HttpPost]
-        public async Task Post([FromBody] User user)
+        public async Task<Session?> Login([FromBody] Credentials credentials)
         {
-            await commands.AddOne(user);
+            return await jwtService.GenerateToken(credentials);
         }
 
-        // PUT api/<UserController>/5
-        [HttpPut]
-        public async Task Put([FromBody] User user)
+        [Route("register")]
+        [HttpPost]
+        public async Task<Session?> Register([FromBody] Credentials credentials)
         {
-            await commands.ReplaceOne(user);
+            var user = await userService.CreateUser(credentials);
+            if (user == null)
+                return null;
+            return await jwtService.GenerateToken(credentials);
         }
 
-        // DELETE api/<TodoController>/5
-        [HttpDelete("{id}")]
-        public async Task Delete(string id)
-        {
-            await commands.RemoveOne(x => x.Id, id);
-        }
 
     }
 }

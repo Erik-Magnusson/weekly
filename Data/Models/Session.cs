@@ -10,7 +10,6 @@ namespace Data.Models
     {
         public string Username { get; set; }
         public string Token { get; set; }
-        public string Role { get; set; }
         public Guid UserId { get; set; }
         public int ExpiresIn { get; set; }
         public DateTime ExpiryTimeStamp { get; set; }
