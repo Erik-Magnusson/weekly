@@ -29,20 +29,20 @@ namespace Flux.Stores
 
             Load();
 
-            dispatcher.Action += async payload =>
+            dispatcher.Action += async dispatchable =>
             {
-                switch (payload.ActionType)
+                switch (dispatchable.ActionType)
                 {
                     case ActionType.ADD_TEMPLATE:
-                        await AddTemplate(((Dispatchable<Template>)payload).Value);
+                        await AddTemplate(((Dispatchable<Template>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.DELETE_TEMPLATE:
-                        await DeleteTemplate(((Dispatchable<Template>)payload).Value);
+                        await DeleteTemplate(((Dispatchable<Template>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_TEMPLATE:
-                        await UpdateTemplate(((Dispatchable<Template>)payload).Value);
+                        await UpdateTemplate(((Dispatchable<Template>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                 }

@@ -24,26 +24,22 @@ namespace Flux.Stores
         public UserStore(IDispatcher dispatcher, HttpClient httpClient)
         {
             this.httpClient = httpClient;
-            Session = new Session()
-            {
-                Username = "erik",
-                UserId = new Guid("a9feab14-ccd7-4fba-815f-673e8322f43a")
-            };
+            Session = null;
 
-            dispatcher.Action += async payload =>
+            dispatcher.Action += async dispatchable =>
             {
-                switch (payload.ActionType)
+                switch (dispatchable.ActionType)
                 {
                     case ActionType.LOGIN_USER:
-                        Session = await GetSession(((Dispatchable<Credentials>)payload).Value, "login");
+                        Session = await GetSession(((Dispatchable<Credentials>)dispatchable).Payload, "login");
                         OnChange?.Invoke();
                         break;
                     case ActionType.LOGOUT_USER:
                         Session = null;
                         OnChange?.Invoke();
                         break;
-                    case ActionType.NEW_USER:
-                        Session = await GetSession(((Dispatchable<Credentials>)payload).Value, "register");
+                    case ActionType.REGISTER_USER:
+                        Session = await GetSession(((Dispatchable<Credentials>)dispatchable).Payload, "register");
                         OnChange?.Invoke();
                         break;
                 }

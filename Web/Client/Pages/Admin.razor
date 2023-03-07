@@ -64,7 +64,7 @@
         var dispatchable = new Dispatchable<Todo>
         {
             ActionType = ActionType.DELETE_TODO,
-            Value = todo
+            Payload = todo
 
         };
         dispatcher.Dispatch(dispatchable);

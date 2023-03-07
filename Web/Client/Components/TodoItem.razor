@@ -39,7 +39,7 @@
         var dispatchable = new Dispatchable<Todo>
         {
             ActionType = ActionType.UPDATE_TODO,
-            Value = Item
+            Payload = Item
         };
         dispatcher.Dispatch(dispatchable);
     }
@@ -50,7 +50,7 @@
         var dispatchable = new Dispatchable<Todo>
         {
             ActionType = ActionType.UPDATE_TODO,
-            Value = Item
+            Payload = Item
         };
         dispatcher.Dispatch(dispatchable);
     }

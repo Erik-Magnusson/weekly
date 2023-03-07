@@ -34,7 +34,7 @@
         var dispatchable = new Dispatchable<Template>
         {
             ActionType = ActionType.ADD_TEMPLATE,
-            Value = newTemplate
+            Payload = newTemplate
         };
         dispatcher.Dispatch(dispatchable);
     }

@@ -39,24 +39,24 @@ namespace Flux.Stores
 
             Load();
 
-            dispatcher.Action += async payload =>
+            dispatcher.Action += async dispatchable =>
             {
-                switch (payload.ActionType)
+                switch (dispatchable.ActionType)
                 {
                     case ActionType.ADD_TODO:
-                        await AddTodo(((Dispatchable<Template>)payload).Value);
+                        await AddTodo(((Dispatchable<Template>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.DELETE_TODO:
-                        await DeleteTodo(((Dispatchable<Todo>)payload).Value);
+                        await DeleteTodo(((Dispatchable<Todo>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_TODO:
-                        await UpdateTodo(((Dispatchable<Todo>)payload).Value);
+                        await UpdateTodo(((Dispatchable<Todo>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_WEEK:
-                        UpdateWeek(((Dispatchable<Week>)payload).Value);
+                        UpdateWeek(((Dispatchable<Week>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                 }

@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+
 
 namespace Data.Models
 {
     public class Credentials
     {
+        [Required]
+        [RegularExpression(@"^[a-zA-Z0-9_-]*$", ErrorMessage = "Username contains invalid characters.")]
         public string Username { get; set; }
+        [Required]
+        [MinLength(8, ErrorMessage = "Password needs to be at least 8 characters.")]
         public string Password { get; set; }
     }
 }

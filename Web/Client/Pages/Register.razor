@@ -1,7 +1,8 @@
 ﻿@page "/register"
+@inject IDispatcher dispatcher
 @inject NavigationManager navManager
 @inject IUserStore userStore
-@using System.ComponentModel.DataAnnotations
+
 
 <div class="container">
     <div class="row pt-5">
@@ -22,22 +23,12 @@
 </div>
 @code {
 
-    private class Credentials
-    {
-        [Required]
-        [RegularExpression(@"^[a-zA-Z0-9_-]*$", ErrorMessage = "Username contains invalid characters.")]
-        public string Username { get; set; }
-        [Required]
-        [MinLength(8, ErrorMessage = "Password needs to be at least 8 characters.")]
-        public string Password { get; set; }
-    }
-
     private Credentials credentials = new Credentials();
 
     private void RegisterUser()
     {
-        //var weeklyAuth = (WeeklyAuthenticationStateProvider)authenticationStateProvider;
-        //weeklyAuth.Register(credentials.Username, credentials.Password);
+        var dispatchable = new Dispatchable<Credentials>(ActionType.REGISTER_USER, credentials);
+        dispatcher.Dispatch(dispatchable);
     }
 
     private void Update()

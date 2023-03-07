@@ -10,6 +10,12 @@ namespace Flux.Dispatchables
     {
         public ActionType ActionType { get; set; }
 
-        public T Value { get; set; }
+        public T Payload { get; set; }
+
+        public Dispatchable(ActionType actionType, T value)
+        {
+            ActionType = actionType;
+            Payload = value;
+        }
     }
 }

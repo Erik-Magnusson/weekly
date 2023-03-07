@@ -1,4 +1,5 @@
 ﻿@page "/login"
+@inject IDispatcher dispatcher
 @inject NavigationManager navManager
 @inject IUserStore userStore
 
@@ -13,10 +14,10 @@
                 </ul>
             }
             <div class="m-1">
-                <input @bind="username" class="form-control @(invalidCredentials ? "modified invalid" : string.Empty)" placeholder="Username" />
+                <input @bind="credentials.Username" class="form-control @(invalidCredentials ? "modified invalid" : string.Empty)" placeholder="Username" />
             </div>
             <div class="m-1">
-                <input @bind="password" type="password" class="form-control @(invalidCredentials ? "modified invalid" : string.Empty)" placeholder="Password" />
+                <input @bind="credentials.Password" type="password" class="form-control @(invalidCredentials ? "modified invalid" : string.Empty)" placeholder="Password" />
             </div>
            
             <div class="m-1 mt-2">
@@ -33,13 +34,12 @@
 @code {
 
     private bool invalidCredentials = false;
-    private string username = string.Empty;
-    private string password = string.Empty;
+    private Credentials credentials = new Credentials();
 
     private void LoginUser()
     {
-        //var weeklyAuth = (WeeklyAuthenticationStateProvider)authenticationStateProvider;
-        //weeklyAuth.Login(username, password);
+        var dispatchable = new Dispatchable<Credentials>(ActionType.LOGIN_USER, credentials);
+        dispatcher.Dispatch(dispatchable);
     }
 
     private void Update()

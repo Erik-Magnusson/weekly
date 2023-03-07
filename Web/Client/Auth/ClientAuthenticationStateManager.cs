@@ -14,8 +14,8 @@ namespace Web.Client.Auth
         public ClientAuthenticationStateProvider(IUserStore userStore)
         {
             this.userStore = userStore;
-            this.anonymous = new ClaimsPrincipal(new ClaimsIdentity());
             this.userStore.OnChange += UpdateAuthenticationState;
+            this.anonymous = new ClaimsPrincipal(new ClaimsIdentity());
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
