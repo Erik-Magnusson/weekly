@@ -31,11 +31,7 @@
     {
         var newTemplate = template;
         newTemplate.Id = null;
-        var dispatchable = new Dispatchable<Template>
-        {
-            ActionType = ActionType.ADD_TEMPLATE,
-            Payload = newTemplate
-        };
+        var dispatchable = new Dispatchable<Template>(ActionType.ADD_TEMPLATE, newTemplate);
         dispatcher.Dispatch(dispatchable);
     }
 

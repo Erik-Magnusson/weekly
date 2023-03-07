@@ -43,32 +43,20 @@
 
     private void Save()
     {
-        var dispatchable = new Dispatchable<Template>
-        {
-            ActionType = ActionType.UPDATE_TEMPLATE,
-            Payload = Item
-        };
         isEditing = false;
+        var dispatchable = new Dispatchable<Template>(ActionType.UPDATE_TEMPLATE, Item);
         dispatcher.Dispatch(dispatchable);
     }
 
     private void AddTodo()
     {
-        var dispatchable = new Dispatchable<Template>
-        {
-            ActionType = ActionType.ADD_TODO,
-            Payload = Item
-        };
+        var dispatchable = new Dispatchable<Template>(ActionType.ADD_TODO, Item);
         dispatcher.Dispatch(dispatchable);
     }
 
     private void DeleteTemplate()
     {
-        var dispatchable = new Dispatchable<Template>
-        {
-            ActionType = ActionType.DELETE_TEMPLATE,
-            Payload = Item
-        };
+        var dispatchable = new Dispatchable<Template>(ActionType.DELETE_TEMPLATE, Item);
         dispatcher.Dispatch(dispatchable);
     }
 

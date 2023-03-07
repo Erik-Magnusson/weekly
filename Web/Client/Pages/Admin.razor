@@ -61,12 +61,7 @@
 
     private void DeleteTodo(Todo todo)
     {
-        var dispatchable = new Dispatchable<Todo>
-        {
-            ActionType = ActionType.DELETE_TODO,
-            Payload = todo
-
-        };
+        var dispatchable = new Dispatchable<Todo>(ActionType.DELETE_TODO, todo);
         dispatcher.Dispatch(dispatchable);
     }
 

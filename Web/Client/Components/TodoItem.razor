@@ -36,22 +36,14 @@
     private void Done()
     {
         Item.NrDone++;
-        var dispatchable = new Dispatchable<Todo>
-        {
-            ActionType = ActionType.UPDATE_TODO,
-            Payload = Item
-        };
+        var dispatchable = new Dispatchable<Todo>(ActionType.UPDATE_TODO, Item);
         dispatcher.Dispatch(dispatchable);
     }
 
     private void UnDone()
     {
         Item.NrDone = Item.NrDone <= 0 ? 0 : Item.NrDone - 1;
-        var dispatchable = new Dispatchable<Todo>
-        {
-            ActionType = ActionType.UPDATE_TODO,
-            Payload = Item
-        };
+        var dispatchable = new Dispatchable<Todo>(ActionType.UPDATE_TODO, Item);
         dispatcher.Dispatch(dispatchable);
     }
 }

@@ -24,13 +24,8 @@
 
     private void UpdateWeek(int newWeekNr)
     {
-        var dispatchable = new Dispatchable<Week>
-        {
-            ActionType = ActionType.UPDATE_WEEK,
-            Payload = new Week(newWeekNr)
-        };
+        var dispatchable = new Dispatchable<Week>(ActionType.UPDATE_WEEK, new Week(newWeekNr));
         dispatcher.Dispatch(dispatchable);
-
     }
 
 
