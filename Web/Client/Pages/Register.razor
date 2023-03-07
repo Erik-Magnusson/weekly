@@ -2,6 +2,7 @@
 @inject IDispatcher dispatcher
 @inject NavigationManager navManager
 @inject IUserStore userStore
+@implements IDisposable
 
 
 <div class="container">
@@ -46,4 +47,8 @@
         userStore.OnChange += Update;
     }
 
+    public void Dispose()
+    {
+        userStore.OnChange -= Update;
+    }
 }
