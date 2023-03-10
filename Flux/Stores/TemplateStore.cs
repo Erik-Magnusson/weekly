@@ -9,19 +9,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Models;
 using System.Net.Http.Json;
+using Flux.Services;
 
 namespace Flux.Stores
 {
     public class TemplateStore : ITemplateStore
     {
         private readonly IUserStore userStore;
-        private readonly HttpClient httpClient;
+        private readonly IApiService apiService;
         public IList<Template> Templates { get; private set; }
         public Action? OnChange { get; set; }
 
-        public TemplateStore(IDispatcher dispatcher, IUserStore userStore, HttpClient httpClient)
+        public TemplateStore(IDispatcher dispatcher, IUserStore userStore, IApiService apiService)
         {
-            this.httpClient = httpClient;
+            this.apiService = apiService;
             this.userStore = userStore;
             this.userStore.OnChange += Load;
 
@@ -53,41 +54,37 @@ namespace Flux.Stores
         private async Task AddTemplate(Template template)
         {
             template.UserId = this.userStore.Session.UserId;
-            var response = await httpClient.PostAsJsonAsync<Template>("/api/template", template);
-            if (response.IsSuccessStatusCode)
-            {
+            var success = await apiService.Add(template);
+            if (success)
                 Templates.Add(template);
-            }
-            
         }
 
         private async Task DeleteTemplate(Template template)
         {
-            var response = await httpClient.DeleteAsync($"/api/todo/{template.Id}");
-            if (response.IsSuccessStatusCode)
-            {
+            var success = await apiService.Delete(template);
+            if (success)
                 Templates.Remove(template);
-            }
         }
 
         private async Task UpdateTemplate(Template template)
         {
-            var response = await httpClient.PutAsJsonAsync<Template>($"/api/todo", template);
-            if (response.IsSuccessStatusCode)
-            {
-                var idx = Templates.IndexOf(Templates.FirstOrDefault(x => x.Id == template.Id));
-                if (idx != -1)
-                {
-                    Templates[idx] = template;
-                }
-            }
+            var sucess = await apiService.Update(template);
+            if (!sucess)
+                return;
+
+            var idx = Templates.IndexOf(Templates.FirstOrDefault(x => x.Id == template.Id));
+            if (idx == -1)
+                return;
+            
+           Templates[idx] = template;
         }
+        
 
         public async void Load()
         {
-            var response = await httpClient.GetAsync($"/api/template/{userStore.Session?.UserId}");
-            Templates = await response.Content.ReadFromJsonAsync<IList<Template>>();
+            Templates = await apiService.Get<Template>(userStore.Session?.UserId);
             OnChange?.Invoke();
         }
     }
 }
+

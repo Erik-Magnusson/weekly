@@ -16,6 +16,7 @@ namespace Web.Client.Auth
             this.userStore = userStore;
             this.userStore.OnChange += UpdateAuthenticationState;
             this.anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+            Console.WriteLine("ClientAuthenticationStateProvider constructor called");
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()

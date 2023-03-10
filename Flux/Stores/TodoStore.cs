@@ -6,13 +6,14 @@ using System.Globalization;
 using Data.Models;
 using System.Net.Http;
 using System.Net.Http.Json;
+using Flux.Services;
 
 namespace Flux.Stores
 {
     public class TodoStore : ITodoStore
     {
 
-        private readonly HttpClient httpClient;
+        private readonly IApiService apiService;
         private readonly IUserStore userStore;
         public IList<Todo> Todos { get; private set; }  
         public int Year { get; private set; }
@@ -23,9 +24,9 @@ namespace Flux.Stores
 
         private Calendar calendar;
 
-        public TodoStore(IDispatcher dispatcher, IUserStore userStore, HttpClient httpClient)
+        public TodoStore(IDispatcher dispatcher, IUserStore userStore, IApiService apiService)
         {
-            this.httpClient = httpClient;
+            this.apiService = apiService;
             this.userStore = userStore;
             this.userStore.OnChange += Load;
 
@@ -77,38 +78,35 @@ namespace Flux.Stores
                 Year = Year,
             };
 
-            var response = await httpClient.PostAsJsonAsync<Todo>("/api/todo", todo);
-            if (response.IsSuccessStatusCode)
-            {
-                allTodos.Add(todo);
-                FilterTodos();
-            }
+            var success = await apiService.Add(todo);
+            if (!success)
+                return;
+            
+            allTodos.Add(todo);
+            FilterTodos();
         }
 
         private async Task DeleteTodo(Todo todo)
         {
-            var response = await httpClient.DeleteAsync($"/api/todo/{todo.Id}");
-            if (response.IsSuccessStatusCode)
-            {
-                allTodos.Remove(todo);
-                FilterTodos();
-            }
-           
+            var success = await apiService.Delete(todo);
+            if (!success)
+                return;
+            allTodos.Remove(todo);
+            FilterTodos();
         }
 
         private async Task UpdateTodo(Todo todo)
         {
-            var response = await httpClient.PutAsJsonAsync<Todo>($"/api/todo", todo);
-            if (response.IsSuccessStatusCode)
-            {
-                var idx = allTodos.IndexOf(allTodos.FirstOrDefault(x => x.Id == todo.Id));
-                if (idx != -1)
-                {
-                    allTodos[idx] = todo;
-                    FilterTodos();
-                }
-            }
-            
+            var success = await apiService.Update(todo);
+            if (!success)
+                return;
+
+            var idx = allTodos.IndexOf(allTodos.FirstOrDefault(x => x.Id == todo.Id));
+            if (idx == -1)
+                return;
+
+            allTodos[idx] = todo;
+            FilterTodos();
         }
 
         private void UpdateWeek(Week week)
@@ -134,8 +132,7 @@ namespace Flux.Stores
 
         private async void Load()
         {
-            var response = await httpClient.GetAsync($"/api/todo/{userStore.Session?.UserId}");
-            allTodos = await response.Content.ReadFromJsonAsync<IList<Todo>>();
+            allTodos = await apiService.Get<Todo>(userStore.Session?.UserId);
             FilterTodos();
             OnChange?.Invoke();
         }

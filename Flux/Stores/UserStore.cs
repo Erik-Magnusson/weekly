@@ -26,6 +26,8 @@ namespace Flux.Stores
             this.httpClient = httpClient;
             Session = null;
 
+            Console.WriteLine("UserStore constructor called");
+
             dispatcher.Action += async dispatchable =>
             {
                 switch (dispatchable.ActionType)
