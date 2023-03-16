@@ -12,30 +12,26 @@ namespace Flux.Stores
 {
     public class TodoStore : ITodoStore
     {
-
         private readonly IApiService apiService;
-        private readonly IUserStore userStore;
         public IList<Todo> Todos { get; private set; }  
         public int Year { get; private set; }
         public int Week { get; private set; }
         public Action? OnChange { get; set; }
 
+        private Session? session;
         private IList<Todo> allTodos;
-
         private Calendar calendar;
 
-        public TodoStore(IDispatcher dispatcher, IUserStore userStore, IApiService apiService)
+        public TodoStore(IDispatcher dispatcher, IApiService apiService)
         {
             this.apiService = apiService;
-            this.userStore = userStore;
-            this.userStore.OnChange += Load;
+            this.session = null;
 
             CultureInfo culture = new CultureInfo("sv-SE");
             calendar = culture.Calendar;
             Year = calendar.GetYear(DateTime.Now);
             Week = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFullWeek, DateTime.Now.DayOfWeek);
-            
-
+         
             allTodos = Todos = new List<Todo>();
 
             Load();
@@ -69,7 +65,7 @@ namespace Flux.Stores
         {
             var todo = new Todo()
             {
-                UserId = this.userStore.Session.UserId,
+                UserId = session.UserId,
                 Text= template.Text,
                 NrDone = 0,
                 NrTotal = template.NrTotal,
@@ -132,7 +128,7 @@ namespace Flux.Stores
 
         private async void Load()
         {
-            allTodos = await apiService.Get<Todo>(userStore.Session?.UserId);
+            allTodos = await apiService.Get<Todo>();
             FilterTodos();
             OnChange?.Invoke();
         }

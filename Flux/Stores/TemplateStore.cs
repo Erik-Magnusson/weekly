@@ -15,16 +15,13 @@ namespace Flux.Stores
 {
     public class TemplateStore : ITemplateStore
     {
-        private readonly IUserStore userStore;
         private readonly IApiService apiService;
         public IList<Template> Templates { get; private set; }
         public Action? OnChange { get; set; }
 
-        public TemplateStore(IDispatcher dispatcher, IUserStore userStore, IApiService apiService)
+        public TemplateStore(IDispatcher dispatcher, IApiService apiService)
         {
             this.apiService = apiService;
-            this.userStore = userStore;
-            this.userStore.OnChange += Load;
 
             Templates = new List<Template>();
 
@@ -53,7 +50,6 @@ namespace Flux.Stores
 
         private async Task AddTemplate(Template template)
         {
-            template.UserId = this.userStore.Session.UserId;
             var success = await apiService.Add(template);
             if (success)
                 Templates.Add(template);
@@ -82,7 +78,7 @@ namespace Flux.Stores
 
         public async void Load()
         {
-            Templates = await apiService.Get<Template>(userStore.Session?.UserId);
+            Templates = await apiService.Get<Template>();
             OnChange?.Invoke();
         }
     }

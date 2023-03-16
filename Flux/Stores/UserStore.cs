@@ -12,28 +12,27 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Collections;
 using Data.Models;
 using System.Net.Http.Json;
+using Flux.Services;
 
 namespace Flux.Stores
 {
     public class UserStore : IUserStore
     {
-        private readonly HttpClient httpClient;
+        private readonly IApiService apiService;
         public Action? OnChange { get; set; }
         public Session? Session { get; private set; }
 
-        public UserStore(IDispatcher dispatcher, HttpClient httpClient)
+        public UserStore(IDispatcher dispatcher, IApiService apiService)
         {
-            this.httpClient = httpClient;
+            this.apiService = apiService;
             Session = null;
-
-            Console.WriteLine("UserStore constructor called");
 
             dispatcher.Action += async dispatchable =>
             {
                 switch (dispatchable.ActionType)
                 {
                     case ActionType.LOGIN_USER:
-                        Session = await GetSession(((Dispatchable<Credentials>)dispatchable).Payload, "login");
+                        Session = await apiService.LoginUser(((Dispatchable<Credentials>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.LOGOUT_USER:
@@ -41,20 +40,11 @@ namespace Flux.Stores
                         OnChange?.Invoke();
                         break;
                     case ActionType.REGISTER_USER:
-                        Session = await GetSession(((Dispatchable<Credentials>)dispatchable).Payload, "register");
+                        Session = await apiService.RegisterUser(((Dispatchable<Credentials>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                 }
             };
-        }
-
-        private async Task<Session?> GetSession(Credentials credentials, string action)
-        {
-            var response = await httpClient.PostAsJsonAsync($"/api/user/{action}", credentials);
-            Session? session = null;
-            if (response.IsSuccessStatusCode)
-                session = await response.Content.ReadFromJsonAsync<Session?>();
-            return session;      
         }
 
     }

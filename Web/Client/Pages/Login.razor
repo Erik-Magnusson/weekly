@@ -2,7 +2,9 @@
 @inject IDispatcher dispatcher
 @inject NavigationManager navManager
 @inject IUserStore userStore
+@inject AuthenticationStateProvider authStateProvider
 @implements IDisposable
+
 
 
 <div class="container"> 
@@ -51,7 +53,7 @@
             InvokeAsync(() => StateHasChanged());
             return;
         }
-        navManager.NavigateTo("/admin", true);
+        navManager.NavigateTo("/", true);
     }
 
     protected override void OnInitialized()

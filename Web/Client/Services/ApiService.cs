@@ -1,23 +1,23 @@
 ﻿using Data.Models;
-using Flux.Stores;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
+using Flux.Services;
+using Microsoft.JSInterop;
+using System.Text.Json;
 using System.Text;
-using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
+using Amazon.Runtime;
+using static System.Net.WebRequestMethods;
+using System.Net.Http.Headers;
 
-namespace Flux.Services
+namespace Web.Client.Services
 {
     public class ApiService : IApiService
     {
         private HttpClient httpClient;
-        public ApiService(IConfiguration configuration)
-        { 
-            httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(configuration["ApiBaseUrl"]);
+        private CookieService cookieService;
+        public ApiService(HttpClient httpClient, CookieService cookieService)
+        {
+            this.httpClient = httpClient;
+            this.cookieService = cookieService;
         }
 
         public async Task<Session?> LoginUser(Credentials credentials)
@@ -32,16 +32,31 @@ namespace Flux.Services
 
         private async Task<Session?> GetSession(string url, Credentials credentials)
         {
-            var response = await httpClient.PostAsJsonAsync($"/api/user/reg{url}", credentials);
+            var response = await httpClient.PostAsJsonAsync(url, credentials);
             Session? session = null;
             if (response.IsSuccessStatusCode)
+            {
+                
                 session = await response.Content.ReadFromJsonAsync<Session?>();
+                await SetSessionCookie(session);
+            }
             return session;
         }
 
-        public async Task<IList<T>> Get<T>(Guid? userId) where T : DataEntityBase
+       
+
+        private async Task SetSessionCookie(Session? session)
         {
-            var response = await httpClient.GetAsync($"/api/{typeof(T).Name}/{userId}");
+            if (session == null)
+                return;
+            await cookieService.SetValueAsync("weeklySession", session.Token);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", session.Token);
+        }
+
+
+        public async Task<IList<T>> Get<T>() where T : DataEntityBase
+        {
+            var response = await httpClient.GetAsync($"/api/{typeof(T).Name}");
             return await response.Content.ReadFromJsonAsync<IList<T>>();
         }
 

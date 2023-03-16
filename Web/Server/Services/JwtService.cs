@@ -11,18 +11,8 @@ namespace Web.Server.Services
         public const string JWT_SECURITY_KEY = "sdfhsdoifhh784yr843yr843yr834yr87y348r7y3487ry348ry8347rfsdoif";
         public const int JWT_TOKE_VALIDITY_MINS = 20;
 
-        public UserService userService;
-
-        public JwtService(UserService userService)
-        {
-            this.userService = userService;
-
-        }
-
-        public async Task<Session?> GenerateToken(Credentials credentials)
-        {
-            var user = await userService.AuthenticateUser(credentials); 
-
+        public async Task<Session?> GenerateToken(User user)
+        { 
             if (user == null)
                 return null;
 

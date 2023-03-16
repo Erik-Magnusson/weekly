@@ -2,6 +2,9 @@
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Web.Server.Services;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System.Text.Json;
+using System.Text;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -30,7 +33,8 @@ namespace Web.Server.Controllers
         [HttpPost]
         public async Task<Session?> Login([FromBody] Credentials credentials)
         {
-            return await jwtService.GenerateToken(credentials);
+            var user = await userService.AuthenticateUser(credentials);
+            return await jwtService.GenerateToken(user);
         }
 
         [Route("register")]
@@ -38,9 +42,7 @@ namespace Web.Server.Controllers
         public async Task<Session?> Register([FromBody] Credentials credentials)
         {
             var user = await userService.CreateUser(credentials);
-            if (user == null)
-                return null;
-            return await jwtService.GenerateToken(credentials);
+            return await jwtService.GenerateToken(user);
         }
 
 

@@ -24,6 +24,15 @@ namespace Web.Server.Services
             commands = new Commands<User>(connectionString, "Weekly", "User");
         }
 
+        public async Task<User?> GetUser(Guid userId)
+        {
+            var user = await queries.GetOne(x => x.UserId, userId);
+            if (user == null)
+                return null;
+
+            return user;
+        }
+
         public async Task<User?> AuthenticateUser(Credentials credentials)
         {
             var user = await queries.GetOne(x => x.Username, credentials.Username);
