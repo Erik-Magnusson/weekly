@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 
-namespace Data.Models
+namespace Web.Models.Models
 {
     public class Credentials
     {
