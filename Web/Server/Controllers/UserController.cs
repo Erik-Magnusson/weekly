@@ -11,17 +11,11 @@ namespace Web.Server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IUserService userService;
+        private readonly IJwtService jwtService;
 
-        private readonly IQueries<User> queries;
-        private readonly ICommands<User> commands;
-        private readonly UserService userService;
-        private readonly JwtService jwtService;
-
-        public UserController(IConfiguration configuration, UserService userService, JwtService jwtService)
+        public UserController(IUserService userService, IJwtService jwtService)
         {
-            var connectionString = configuration.GetConnectionString("Weekly");
-            queries = new Queries<User>(connectionString, "Weekly", "User");
-            commands = new Commands<User>(connectionString, "Weekly", "User");
             this.userService = userService;
             this.jwtService = jwtService;
         }

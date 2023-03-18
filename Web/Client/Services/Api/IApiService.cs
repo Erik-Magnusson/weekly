@@ -1,6 +1,6 @@
 ﻿using Web.Models;
 
-namespace Web.Client.Services.Http
+namespace Web.Client.Services.Api
 {
     public interface IApiService
     {

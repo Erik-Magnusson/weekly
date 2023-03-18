@@ -6,7 +6,7 @@ using Web.Models;
 
 namespace Web.Server.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private ICommands<User> commands;
         private IQueries<User> queries;
@@ -41,7 +41,7 @@ namespace Web.Server.Services
             return user;
         }
 
-    public async Task<User?> CreateUser(Credentials credentials)
+        public async Task<User?> CreateUser(Credentials credentials)
         {
             var existingUser = await queries.GetOne(x => x.Username, credentials.Username);
             if (existingUser != null)
@@ -64,7 +64,7 @@ namespace Web.Server.Services
                 return null;
 
             return user;
-            
+
         }
     }
 }

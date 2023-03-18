@@ -3,7 +3,7 @@ using Flux.Dispatchable;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using Web.Models;
-using Web.Client.Services.Http;
+using Web.Client.Services.Api;
 
 namespace Web.Client.Stores
 {

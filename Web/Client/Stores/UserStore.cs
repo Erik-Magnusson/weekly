@@ -1,6 +1,6 @@
 ﻿using Flux.Dispatchable;
 using Flux.Dispatcher;
-using Web.Client.Services.Http;
+using Web.Client.Services.Api;
 using Web.Models;
 
 namespace Web.Client.Stores

@@ -4,16 +4,14 @@ using Flux.Dispatchable;
 using Flux.Dispatcher;
 using Web.Client.Services.Misc;
 
-namespace Web.Client.Services.Http
+namespace Web.Client.Services.Api
 {
     public class ApiService : IApiService
     {
         private HttpClient httpClient;
-        private CookieService cookieService;
-        public ApiService(HttpClient httpClient, IDispatcher<ActionType> dispatcher, CookieService cookieService)
+        public ApiService(HttpClient httpClient, IDispatcher<ActionType> dispatcher, ICookieService cookieService)
         {
             this.httpClient = httpClient;
-            this.cookieService = cookieService;
             dispatcher.Action += async dispatchable =>
             {
                 switch (dispatchable.ActionType)

@@ -6,13 +6,13 @@ using Data.Models;
 
 namespace Web.Server.Services
 {
-    public class JwtService
+    public class JwtService : IJwtService
     {
         public const string JWT_SECURITY_KEY = "sdfhsdoifhh784yr843yr843yr834yr87y348r7y3487ry348ry8347rfsdoif";
         public const int JWT_TOKE_VALIDITY_MINS = 20;
 
         public string? GenerateToken(User? user)
-        { 
+        {
             if (user == null)
                 return null;
 

@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Web.Client.Services.Misc
 {
-    public class CookieService
+    public class CookieService : ICookieService
     {
         private Lazy<IJSObjectReference> accessorJsRef = new();
         private readonly IJSRuntime js;

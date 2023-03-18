@@ -5,9 +5,9 @@ namespace Web.Client.Services.Auth
 {
     public class AuthorizationHandler : DelegatingHandler
     {
-        private readonly CookieService cookieService;
+        private readonly ICookieService cookieService;
 
-        public AuthorizationHandler(CookieService cookieService)
+        public AuthorizationHandler(ICookieService cookieService)
         {
             this.cookieService = cookieService;
         }
