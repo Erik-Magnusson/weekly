@@ -21,10 +21,10 @@ namespace Web.Server.Controllers
             commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
         }
         // GET: api/<TodoController>/userId
-        [HttpGet("{userId}")]
-        public async Task<IEnumerable<Todo>> Get(string userId)
+        [HttpGet]
+        public async Task<IEnumerable<Todo>> Get()
         {
-            var result = await queries.GetAll(x => x.UserId, new Guid(userId));
+            var result = await queries.GetAll(x => x.NrDone, 0);
             return result;
         }
 

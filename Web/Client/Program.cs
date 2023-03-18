@@ -12,13 +12,15 @@ using Web.Client.Services;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
-builder.Services.AddSingleton<IApiService, ApiService>();
 builder.Services.AddSingleton<IDispatcher, Dispatcher>();
+builder.Services.AddSingleton<IApiService, ApiService>();
 builder.Services.AddSingleton<IUserStore, UserStore>();
 builder.Services.AddSingleton<ITodoStore, TodoStore>();
 builder.Services.AddSingleton<ITemplateStore, TemplateStore>();
 builder.Services.AddSingleton<CookieService>();
-builder.Services.AddHttpClient("Web.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+builder.Services.AddSingleton<AuthorizationHandler>();
+builder.Services.AddHttpClient("Web.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+    .AddHttpMessageHandler<AuthorizationHandler>();
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Web.ServerAPI"));
 builder.Services.AddScoped<AuthenticationStateProvider, ClientAuthenticationStateProvider>();
 builder.Services.AddAuthorizationCore();

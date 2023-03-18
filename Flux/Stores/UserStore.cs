@@ -20,27 +20,27 @@ namespace Flux.Stores
     {
         private readonly IApiService apiService;
         public Action? OnChange { get; set; }
-        public Session? Session { get; private set; }
+        public string? Token { get; private set; }
 
         public UserStore(IDispatcher dispatcher, IApiService apiService)
         {
             this.apiService = apiService;
-            Session = null;
+            Token = null;
 
             dispatcher.Action += async dispatchable =>
             {
                 switch (dispatchable.ActionType)
                 {
                     case ActionType.LOGIN_USER:
-                        Session = await apiService.LoginUser(((Dispatchable<Credentials>)dispatchable).Payload);
+                        Token = await apiService.LoginUser(((Dispatchable<Credentials>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.LOGOUT_USER:
-                        Session = null;
+                        Token = null;
                         OnChange?.Invoke();
                         break;
                     case ActionType.REGISTER_USER:
-                        Session = await apiService.RegisterUser(((Dispatchable<Credentials>)dispatchable).Payload);
+                        Token = await apiService.RegisterUser(((Dispatchable<Credentials>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                 }

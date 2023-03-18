@@ -21,10 +21,11 @@ namespace Web.Server.Controllers
             commands = new Commands<Template>(connectionString, "Weekly", "Template");
         }
         // GET: api/<TemplateController>/userId
-        [HttpGet("{userId}")]
-        public async Task<IEnumerable<Template>> Get(string userId)
+        [HttpGet]
+        public async Task<IEnumerable<Template>> Get()
         {
-            var result = await queries.GetAll(x => x.UserId, new Guid(userId));
+            var authHeader = Request.Headers["Authorization"];
+            var result = await queries.GetAll(x => x.NrTotal, 2);
             return result;
         }
 

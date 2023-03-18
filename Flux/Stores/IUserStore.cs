@@ -10,6 +10,6 @@ namespace Flux.Stores
 {
     public interface IUserStore : IStore
     {
-        Session? Session { get; }
+        string? Token { get; }
     }
 }

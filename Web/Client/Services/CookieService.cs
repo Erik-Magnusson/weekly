@@ -7,63 +7,59 @@ namespace Web.Client.Services
 {
     public class CookieService
     {
-        private Lazy<IJSObjectReference> _accessorJsRef = new();
-        private readonly IJSRuntime _jsRuntime;
+        private Lazy<IJSObjectReference> accessorJsRef = new();
+        private readonly IJSRuntime js;
 
-        public CookieService(IJSRuntime jsRuntime)
+        public CookieService(IJSRuntime js)
         {
-            _jsRuntime = jsRuntime;
+            this.js = js;
         }
 
         private async Task WaitForReference()
         {
-            if (_accessorJsRef.IsValueCreated is false)
+            if (accessorJsRef.IsValueCreated is false)
             {
-                _accessorJsRef = new(await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "/js/CookieService.js"));
+                accessorJsRef = new(await js.InvokeAsync<IJSObjectReference>("import", "/js/CookieService.js"));
             }
         }
 
         public async ValueTask DisposeAsync()
         {
-            if (_accessorJsRef.IsValueCreated)
+            if (accessorJsRef.IsValueCreated)
             {
-                await _accessorJsRef.Value.DisposeAsync();
+                await accessorJsRef.Value.DisposeAsync();
             }
         }
 
-        public async Task<string?> GetValueAsync(string key)
+        public async Task<T?> GetValueAsync<T>(string key)
         {
             await WaitForReference();
-            var result = await _accessorJsRef.Value.InvokeAsync<string>("get", key);
+            var result = await accessorJsRef.Value.InvokeAsync<string>("get", key);
             if (string.IsNullOrEmpty(result))
-                return null;
+                return default;
 
             try
             {
                 var cookies = result.Split('=');
                 var cookie = cookies[Array.IndexOf(cookies, key) + 1];
-                Console.WriteLine($"Cookie: {cookie}");
-                //var valueBytes = Convert.FromBase64String(cookie);
-                //var valueJson = Encoding.UTF8.GetString(valueBytes);
-                //var value = JsonSerializer.Deserialize<T>(cookie);
+                var value = JsonSerializer.Deserialize<T>(cookie);
                 
-                return cookie;
+                return value;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return null;
+                return default;
             }
             
         }
 
         public async Task SetValueAsync<T>(string key, T value)
         {
-            //var valueJson = JsonSerializer.Serialize(value);
-            //var valueBytes = Encoding.UTF8.GetBytes(valueJson);
-            //var valueString = Convert.ToBase64String(valueBytes);
+            var valueJson = JsonSerializer.Serialize(value);
+
             await WaitForReference();
-            await _accessorJsRef.Value.InvokeVoidAsync("set", key, value);
+            await accessorJsRef.Value.InvokeVoidAsync("set", key, valueJson);
         }
     }
 }

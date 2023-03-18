@@ -1,9 +1,6 @@
 ﻿@page "/register"
 @inject IDispatcher dispatcher
 @inject NavigationManager navManager
-@inject IUserStore userStore
-@implements IDisposable
-
 
 <div class="container">
     <div class="row pt-5">
@@ -34,21 +31,8 @@
 
     private void Update()
     {
-        if (userStore.Session != null)
-        {
-            navManager.NavigateTo("/", true);
-        }
-        
+        navManager.NavigateTo("/", true);
     }
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        userStore.OnChange += Update;
-    }
-
-    public void Dispose()
-    {
-        userStore.OnChange -= Update;
-    }
+    
 }

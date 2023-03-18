@@ -11,21 +11,18 @@ namespace Web.Client.Auth
     {
         private readonly CookieService cookieService;
         private readonly ClaimsPrincipal anonymous;
-        private Session? session;
 
         public ClientAuthenticationStateProvider(CookieService cookieService)
         {
             this.cookieService = cookieService;
-            this.anonymous = new ClaimsPrincipal(new ClaimsIdentity());
-            session = null;
-            
+            this.anonymous = new ClaimsPrincipal(new ClaimsIdentity());            
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             try
             {
-                var token = await cookieService.GetValueAsync("weeklySession");
+                var token = await cookieService.GetValueAsync<string>("weeklyAuth");
                 if (token == null)
                     return await Task.FromResult(new AuthenticationState(anonymous));
                 var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>

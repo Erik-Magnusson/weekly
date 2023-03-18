@@ -31,18 +31,18 @@ namespace Web.Server.Controllers
 
         [Route("login")]
         [HttpPost]
-        public async Task<Session?> Login([FromBody] Credentials credentials)
+        public async Task<string?> Login([FromBody] Credentials credentials)
         {
             var user = await userService.AuthenticateUser(credentials);
-            return await jwtService.GenerateToken(user);
+            return jwtService.GenerateToken(user);
         }
 
         [Route("register")]
         [HttpPost]
-        public async Task<Session?> Register([FromBody] Credentials credentials)
+        public async Task<string?> Register([FromBody] Credentials credentials)
         {
             var user = await userService.CreateUser(credentials);
-            return await jwtService.GenerateToken(user);
+            return jwtService.GenerateToken(user);
         }
 
 

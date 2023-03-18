@@ -1,10 +1,8 @@
 ﻿@page "/login"
 @inject IDispatcher dispatcher
 @inject NavigationManager navManager
-@inject IUserStore userStore
 @inject AuthenticationStateProvider authStateProvider
-@implements IDisposable
-
+@inject IApiService apiService
 
 
 <div class="container"> 
@@ -47,23 +45,7 @@
 
     private void Update()
     {
-        if (userStore.Session == null)
-        {
-            invalidCredentials = true;
-            InvokeAsync(() => StateHasChanged());
-            return;
-        }
         navManager.NavigateTo("/", true);
     }
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        userStore.OnChange += Update;
-    }
-
-    public void Dispose()
-    {
-        userStore.OnChange -= Update;
-    }
 }
