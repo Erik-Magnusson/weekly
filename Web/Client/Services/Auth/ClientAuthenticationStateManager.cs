@@ -6,10 +6,10 @@ namespace Web.Client.Services.Auth
 {
     public class ClientAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private readonly CookieService cookieService;
+        private readonly ICookieService cookieService;
         private readonly ClaimsPrincipal anonymous;
 
-        public ClientAuthenticationStateProvider(CookieService cookieService)
+        public ClientAuthenticationStateProvider(ICookieService cookieService)
         {
             this.cookieService = cookieService;
             anonymous = new ClaimsPrincipal(new ClaimsIdentity());
