@@ -1,7 +1,6 @@
 ﻿using Data.Models;
 using Data;
 using Microsoft.AspNetCore.Mvc;
-using Web.Server.Services;
 
 
 namespace Web.Server.Controllers
@@ -21,30 +20,54 @@ namespace Web.Server.Controllers
         }
    
         [HttpGet]
-        public async Task<IEnumerable<Template>> Get()
+        public async Task<IActionResult> Get()
         {
-            var result = await queries.GetAll(x => x.NrTotal, 2);
-            return result;
+            var userId = HttpContext.Items["UserId"];
+            if (userId == null)
+                return Unauthorized();
+            var result = await queries.GetAll(x => x.UserId, Guid.Parse((string)userId));
+            return Ok(result);
         }
 
 
         [HttpPost]
-        public async Task Post([FromBody] Template template)
+        public async Task<IActionResult> Post([FromBody] Template template)
         {
+            var userId = HttpContext.Items["UserId"];
+            if (userId == null)
+                return Unauthorized();
+            if (Guid.Parse((string)userId) != template.UserId)
+                return Unauthorized();
             await commands.AddOne(template);
+            return Ok(template);
         }
 
         [HttpPut]
-        public async Task Put([FromBody] Template template)
+        public async Task<IActionResult> Put([FromBody] Template template)
         {
+            var userId = HttpContext.Items["UserId"];
+            if (userId == null)
+                return Unauthorized();
+            if (Guid.Parse((string)userId) != template.UserId)
+                return Unauthorized();
             await commands.ReplaceOne(template);
+            return Ok(template);
         }
 
 
         [HttpDelete("{id}")]
-        public async void Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            await commands.RemoveOne(x => x.Id, id);
+            var userId = HttpContext.Items["UserId"];
+            if (userId == null)
+                return Unauthorized();
+            var item = await queries.GetOne(id);
+            if (Guid.Parse((string)userId) != item.UserId)
+                return Unauthorized();
+            var success = await commands.RemoveOne(item);
+            if (!success)
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            return Ok(item);
         }
     }
 }
