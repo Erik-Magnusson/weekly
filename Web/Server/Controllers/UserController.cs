@@ -3,7 +3,8 @@ using Data;
 using Microsoft.AspNetCore.Mvc;
 using Web.Server.Services;
 using Web.Models;
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Web.Server.Controllers
 {
@@ -22,6 +23,7 @@ namespace Web.Server.Controllers
 
         [Route("login")]
         [HttpPost]
+        [AllowAnonymous]
         public async Task<string?> Login([FromBody] Credentials credentials)
         {
             var user = await userService.AuthenticateUser(credentials);
@@ -30,6 +32,7 @@ namespace Web.Server.Controllers
 
         [Route("register")]
         [HttpPost]
+        [AllowAnonymous]
         public async Task<string?> Register([FromBody] Credentials credentials)
         {
             var user = await userService.CreateUser(credentials);

@@ -2,7 +2,6 @@
 using Data.Models;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Web.Server.Controllers
 {
@@ -20,30 +19,33 @@ namespace Web.Server.Controllers
             queries = new Queries<Todo>(connectionString, "Weekly", "Todo");
             commands = new Commands<Todo>(connectionString, "Weekly", "Todo");
         }
-        // GET: api/<TodoController>/userId
+
+
         [HttpGet]
         public async Task<IEnumerable<Todo>> Get()
         {
-            var result = await queries.GetAll(x => x.NrDone, 0);
+            var userId = HttpContext.Items["UserId"];
+            if (userId == null)
+                return null;
+            var result = await queries.GetAll(x => x.UserId, Guid.Parse((string)userId));
             return result;
         }
 
   
-        // POST api/<TodoController>
         [HttpPost]
         public async Task Post([FromBody] Todo todo)
         {
             await commands.AddOne(todo);
         }
 
-        // PUT api/<TodoController>/5
+  
         [HttpPut]
         public async Task Put([FromBody] Todo todo)
         {
             await commands.ReplaceOne(todo);
         }
 
-        // DELETE api/<TodoController>/5
+
         [HttpDelete("{id}")]
         public async Task Delete(string id)
         {

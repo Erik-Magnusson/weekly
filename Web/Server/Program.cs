@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.ResponseCompression;
+using Web.Server.Middleware;
 using Web.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +8,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.Configure<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddSingleton<IJwtService, JwtService>();
 
 var app = builder.Build();
 
@@ -32,4 +33,5 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
+app.UseBearerTokenReader();
 app.Run();

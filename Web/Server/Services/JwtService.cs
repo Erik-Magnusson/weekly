@@ -38,5 +38,24 @@ namespace Web.Server.Services
 
             return token;
         }
+
+        public JwtPayload? ReadTokenPayload(string? token)
+        {
+            if (string.IsNullOrEmpty(token))
+                return null;
+
+            try
+            {
+                var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+                var jwt = jwtSecurityTokenHandler.ReadJwtToken(token);
+                return jwt.Payload;
+            }
+            catch 
+            {
+                return null;
+            }
+        }
     }
+
+   
 }
