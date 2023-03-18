@@ -1,9 +1,9 @@
-﻿using Flux.Dispatchables;
+﻿using Flux.Dispatchable;
 using Flux.Dispatcher;
-using Flux.Services;
+using Web.Client.Services;
 using Web.Models;
 
-namespace Flux.Stores
+namespace Web.Client.Stores
 {
     public class UserStore : IUserStore
     {
@@ -11,7 +11,7 @@ namespace Flux.Stores
         public Action? OnChange { get; set; }
         public string? Token { get; private set; }
 
-        public UserStore(IDispatcher dispatcher, IApiService apiService)
+        public UserStore(IDispatcher<ActionType> dispatcher, IApiService apiService)
         {
             this.apiService = apiService;
             Token = null;
@@ -21,7 +21,7 @@ namespace Flux.Stores
                 switch (dispatchable.ActionType)
                 {
                     case ActionType.LOGIN_USER:
-                        Token = await apiService.LoginUser(((Dispatchable<Credentials>)dispatchable).Payload);
+                        Token = await apiService.LoginUser(((Dispatchable<ActionType, Credentials>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.LOGOUT_USER:
@@ -29,7 +29,7 @@ namespace Flux.Stores
                         OnChange?.Invoke();
                         break;
                     case ActionType.REGISTER_USER:
-                        Token = await apiService.RegisterUser(((Dispatchable<Credentials>)dispatchable).Payload);
+                        Token = await apiService.RegisterUser(((Dispatchable<ActionType, Credentials>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                 }

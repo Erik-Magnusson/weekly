@@ -1,4 +1,4 @@
-﻿@inject IDispatcher dispatcher
+﻿@inject IDispatcher<ActionType> dispatcher
 
 <p class="col-4 mt-1 fw-bold">@Item.Text</p>
 
@@ -36,14 +36,14 @@
     private void Done()
     {
         Item.NrDone++;
-        var dispatchable = new Dispatchable<Todo>(ActionType.UPDATE_TODO, Item);
+        var dispatchable = new Dispatchable<ActionType, Todo>(ActionType.UPDATE_TODO, Item);
         dispatcher.Dispatch(dispatchable);
     }
 
     private void UnDone()
     {
         Item.NrDone = Item.NrDone <= 0 ? 0 : Item.NrDone - 1;
-        var dispatchable = new Dispatchable<Todo>(ActionType.UPDATE_TODO, Item);
+        var dispatchable = new Dispatchable<ActionType, Todo>(ActionType.UPDATE_TODO, Item);
         dispatcher.Dispatch(dispatchable);
     }
 }

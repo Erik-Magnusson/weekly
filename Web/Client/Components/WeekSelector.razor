@@ -1,4 +1,4 @@
-﻿@inject IDispatcher dispatcher
+﻿@inject IDispatcher<ActionType> dispatcher
 
 <div class="d-flex justify-content-center">
     <div class="d-flex justify-content-around mt-2 mb-2 align-items-center">
@@ -24,7 +24,7 @@
 
     private void UpdateWeek(int newWeekNr)
     {
-        var dispatchable = new Dispatchable<Week>(ActionType.UPDATE_WEEK, new Week(newWeekNr));
+        var dispatchable = new Dispatchable<ActionType, Week>(ActionType.UPDATE_WEEK, new Week(newWeekNr));
         dispatcher.Dispatch(dispatchable);
     }
 

@@ -1,6 +1,6 @@
 ﻿
 
-namespace Flux.Stores
+namespace Flux.Store
 {
     public interface IStore
     {

@@ -1,4 +1,4 @@
-﻿@inject IDispatcher dispatcher
+﻿@inject IDispatcher<ActionType> dispatcher
 <div class="p-2 border-bottom border-dark">
     @if(isEditing)
     {
@@ -44,19 +44,19 @@
     private void Save()
     {
         isEditing = false;
-        var dispatchable = new Dispatchable<Template>(ActionType.UPDATE_TEMPLATE, Item);
+        var dispatchable = new Dispatchable<ActionType, Template>(ActionType.UPDATE_TEMPLATE, Item);
         dispatcher.Dispatch(dispatchable);
     }
 
     private void AddTodo()
     {
-        var dispatchable = new Dispatchable<Template>(ActionType.ADD_TODO, Item);
+        var dispatchable = new Dispatchable<ActionType, Template>(ActionType.ADD_TODO, Item);
         dispatcher.Dispatch(dispatchable);
     }
 
     private void DeleteTemplate()
     {
-        var dispatchable = new Dispatchable<Template>(ActionType.DELETE_TEMPLATE, Item);
+        var dispatchable = new Dispatchable<ActionType, Template>(ActionType.DELETE_TEMPLATE, Item);
         dispatcher.Dispatch(dispatchable);
     }
 

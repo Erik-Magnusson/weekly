@@ -1,7 +1,7 @@
 ﻿
 namespace Web.Models
 {
-    public class Todo
+    public class Todo : ApiEntityBase
     {
         public Guid UserId { get; set; }
         public string Text { get; set; }

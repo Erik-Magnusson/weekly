@@ -1,7 +1,7 @@
 ﻿
 namespace Web.Models
 {
-    public class Template
+    public class Template : ApiEntityBase
     {
         public Guid UserId { get; set; }
         public string Text { get; set; }

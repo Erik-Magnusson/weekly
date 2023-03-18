@@ -1,7 +1,7 @@
 ﻿@page "/admin"
 @inject ITemplateStore templateStore
 @inject ITodoStore todoStore
-@inject IDispatcher dispatcher
+@inject IDispatcher<ActionType> dispatcher
 @implements IDisposable
 @attribute [Authorize]
 
@@ -61,7 +61,7 @@
 
     private void DeleteTodo(Todo todo)
     {
-        var dispatchable = new Dispatchable<Todo>(ActionType.DELETE_TODO, todo);
+        var dispatchable = new Dispatchable<ActionType, Todo>(ActionType.DELETE_TODO, todo);
         dispatcher.Dispatch(dispatchable);
     }
 

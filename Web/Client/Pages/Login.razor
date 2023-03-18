@@ -1,5 +1,5 @@
 ﻿@page "/login"
-@inject IDispatcher dispatcher
+@inject IDispatcher<ActionType> dispatcher
 @inject NavigationManager navManager
 @inject AuthenticationStateProvider authStateProvider
 @inject IApiService apiService
@@ -39,7 +39,7 @@
 
     private void LoginUser()
     {
-        var dispatchable = new Dispatchable<Credentials>(ActionType.LOGIN_USER, credentials);
+        var dispatchable = new Dispatchable<ActionType, Credentials>(ActionType.LOGIN_USER, credentials);
         dispatcher.Dispatch(dispatchable);
     }
 

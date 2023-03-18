@@ -1,5 +1,5 @@
 ﻿
-namespace Flux.Dispatchables
+namespace Flux.Dispatchable
 {
     public enum ActionType
     {

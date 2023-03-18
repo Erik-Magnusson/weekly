@@ -1,5 +1,5 @@
 ﻿@page "/register"
-@inject IDispatcher dispatcher
+@inject IDispatcher<ActionType> dispatcher
 @inject NavigationManager navManager
 
 <div class="container">
@@ -25,7 +25,7 @@
 
     private void RegisterUser()
     {
-        var dispatchable = new Dispatchable<Credentials>(ActionType.REGISTER_USER, credentials);
+        var dispatchable = new Dispatchable<ActionType, Credentials>(ActionType.REGISTER_USER, credentials);
         dispatcher.Dispatch(dispatchable);
     }
 

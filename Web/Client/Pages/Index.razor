@@ -1,6 +1,6 @@
 ﻿@page "/"
 @inject ITodoStore todoStore
-@inject IDispatcher dispatcher
+@inject IDispatcher<ActionType> dispatcher
 @implements IDisposable
 @attribute [Authorize]
 

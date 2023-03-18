@@ -1,10 +1,10 @@
-﻿using Flux.Dispatchables;
+﻿using Flux.Dispatchable;
 using Flux.Dispatcher;
-using Flux.Services;
+using Web.Client.Services;
 using Web.Models;
 
 
-namespace Flux.Stores
+namespace Web.Client.Stores
 {
     public class TemplateStore : ITemplateStore
     {
@@ -12,7 +12,7 @@ namespace Flux.Stores
         public IList<Template> Templates { get; private set; }
         public Action? OnChange { get; set; }
 
-        public TemplateStore(IDispatcher dispatcher, IApiService apiService)
+        public TemplateStore(IDispatcher<ActionType> dispatcher, IApiService apiService)
         {
             this.apiService = apiService;
 
@@ -25,15 +25,15 @@ namespace Flux.Stores
                 switch (dispatchable.ActionType)
                 {
                     case ActionType.ADD_TEMPLATE:
-                        await AddTemplate(((Dispatchable<Template>)dispatchable).Payload);
+                        await AddTemplate(((Dispatchable<ActionType, Template>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.DELETE_TEMPLATE:
-                        await DeleteTemplate(((Dispatchable<Template>)dispatchable).Payload);
+                        await DeleteTemplate(((Dispatchable<ActionType, Template>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_TEMPLATE:
-                        await UpdateTemplate(((Dispatchable<Template>)dispatchable).Payload);
+                        await UpdateTemplate(((Dispatchable<ActionType, Template>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                 }

@@ -1,11 +1,11 @@
-﻿using Flux.Dispatchables;
+﻿using Flux.Dispatchable;
 
 namespace Flux.Dispatcher
 {
-    public class Dispatcher : IDispatcher
+    public class Dispatcher<T> : IDispatcher<T> where T : Enum
     {
-        public Action<IDispatchable> Action { get; set; }
-        public void Dispatch(IDispatchable payload)
+        public Action<IDispatchable<T>> Action { get; set; }
+        public void Dispatch(IDispatchable<T> payload)
         {
             Action?.Invoke(payload);
         }

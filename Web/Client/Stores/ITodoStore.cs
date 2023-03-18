@@ -1,7 +1,7 @@
 ﻿using Web.Models;
+using Flux.Store;
 
-
-namespace Flux.Stores
+namespace Web.Client.Stores
 {
     public interface ITodoStore : IStore
     {        

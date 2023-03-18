@@ -1,11 +1,11 @@
 ﻿using Flux.Dispatcher;
-using Flux.Dispatchables;
+using Flux.Dispatchable;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
-using Flux.Services;
+using Web.Client.Services;
 using Web.Models;
 
-namespace Flux.Stores
+namespace Web.Client.Stores
 {
     public class TodoStore : ITodoStore
     {
@@ -19,7 +19,7 @@ namespace Flux.Stores
         private IList<Todo> allTodos;
         private Calendar calendar;
 
-        public TodoStore(IDispatcher dispatcher, IApiService apiService)
+        public TodoStore(IDispatcher<ActionType> dispatcher, IApiService apiService)
         {
             this.apiService = apiService;
             this.session = null;
@@ -38,19 +38,19 @@ namespace Flux.Stores
                 switch (dispatchable.ActionType)
                 {
                     case ActionType.ADD_TODO:
-                        await AddTodo(((Dispatchable<Template>)dispatchable).Payload);
+                        await AddTodo(((Dispatchable<ActionType, Template>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.DELETE_TODO:
-                        await DeleteTodo(((Dispatchable<Todo>)dispatchable).Payload);
+                        await DeleteTodo(((Dispatchable<ActionType, Todo>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_TODO:
-                        await UpdateTodo(((Dispatchable<Todo>)dispatchable).Payload);
+                        await UpdateTodo(((Dispatchable<ActionType, Todo>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_WEEK:
-                        UpdateWeek(((Dispatchable<Week>)dispatchable).Payload);
+                        UpdateWeek(((Dispatchable<ActionType, Week>)dispatchable).Payload);
                         OnChange?.Invoke();
                         break;
                 }

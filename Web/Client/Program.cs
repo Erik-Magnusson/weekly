@@ -1,18 +1,17 @@
+using Flux.Dispatchable;
 using Flux.Dispatcher;
-using Flux.Services;
-using Flux.Stores;
+using Web.Client.Services;
+using Web.Client.Stores;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using System.Net.Http;
 using Web.Client;
 using Web.Client.Auth;
-using Web.Client.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
-builder.Services.AddSingleton<IDispatcher, Dispatcher>();
+builder.Services.AddSingleton<IDispatcher<ActionType>, Dispatcher<ActionType>>();
 builder.Services.AddSingleton<IApiService, ApiService>();
 builder.Services.AddSingleton<IUserStore, UserStore>();
 builder.Services.AddSingleton<ITodoStore, TodoStore>();

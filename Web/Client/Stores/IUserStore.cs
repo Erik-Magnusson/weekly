@@ -1,5 +1,6 @@
-﻿
-namespace Flux.Stores
+﻿using Flux.Store;
+
+namespace Web.Client.Stores
 {
     public interface IUserStore : IStore
     {
