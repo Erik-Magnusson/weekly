@@ -2,8 +2,8 @@
 using Flux.Dispatchable;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
-using Web.Client.Services;
 using Web.Models;
+using Web.Client.Services.Http;
 
 namespace Web.Client.Stores
 {

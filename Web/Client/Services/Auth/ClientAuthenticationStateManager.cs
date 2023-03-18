@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
-using Web.Client.Services;
+using Web.Client.Services.Misc;
 
-namespace Web.Client.Auth
+namespace Web.Client.Services.Auth
 {
     public class ClientAuthenticationStateProvider : AuthenticationStateProvider
     {
@@ -12,7 +12,7 @@ namespace Web.Client.Auth
         public ClientAuthenticationStateProvider(CookieService cookieService)
         {
             this.cookieService = cookieService;
-            this.anonymous = new ClaimsPrincipal(new ClaimsIdentity());            
+            anonymous = new ClaimsPrincipal(new ClaimsIdentity());
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()

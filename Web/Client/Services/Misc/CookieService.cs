@@ -2,7 +2,7 @@
 using System.Text.Json;
 
 
-namespace Web.Client.Services
+namespace Web.Client.Services.Misc
 {
     public class CookieService
     {
@@ -42,7 +42,7 @@ namespace Web.Client.Services
                 var cookies = result.Split('=');
                 var cookie = cookies[Array.IndexOf(cookies, key) + 1];
                 var value = JsonSerializer.Deserialize<T>(cookie);
-                
+
                 return value;
             }
             catch (Exception ex)
@@ -50,7 +50,7 @@ namespace Web.Client.Services
                 Console.WriteLine(ex);
                 return default;
             }
-            
+
         }
 
         public async Task SetValueAsync<T>(string key, T value)

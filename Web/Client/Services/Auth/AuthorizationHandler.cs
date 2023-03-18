@@ -1,13 +1,13 @@
 ﻿using System.Net.Http.Headers;
-using Web.Client.Services;
+using Web.Client.Services.Misc;
 
-namespace Web.Client.Auth
+namespace Web.Client.Services.Auth
 {
     public class AuthorizationHandler : DelegatingHandler
     {
         private readonly CookieService cookieService;
 
-        public AuthorizationHandler(CookieService cookieService) 
+        public AuthorizationHandler(CookieService cookieService)
         {
             this.cookieService = cookieService;
         }

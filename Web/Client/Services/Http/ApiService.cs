@@ -2,7 +2,9 @@
 using System.Net.Http.Json;
 using Flux.Dispatchable;
 using Flux.Dispatcher;
-namespace Web.Client.Services
+using Web.Client.Services.Misc;
+
+namespace Web.Client.Services.Http
 {
     public class ApiService : IApiService
     {
@@ -54,7 +56,7 @@ namespace Web.Client.Services
             var response = await httpClient.PostAsJsonAsync($"api/{typeof(T).Name}", item);
             if (response.IsSuccessStatusCode)
                 return true;
-            return false;  
+            return false;
         }
 
         public async Task<bool> Delete<T>(T item) where T : ApiEntityBase

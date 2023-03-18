@@ -1,12 +1,13 @@
 using Flux.Dispatchable;
 using Flux.Dispatcher;
-using Web.Client.Services;
 using Web.Client.Stores;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Web.Client;
-using Web.Client.Auth;
+using Web.Client.Services.Auth;
+using Web.Client.Services.Http;
+using Web.Client.Services.Misc;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

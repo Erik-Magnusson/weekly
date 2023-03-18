@@ -1,6 +1,6 @@
 ﻿using Web.Models;
 
-namespace Web.Client.Services
+namespace Web.Client.Services.Http
 {
     public interface IApiService
     {
@@ -9,7 +9,7 @@ namespace Web.Client.Services
         Task<IList<T>> Get<T>() where T : ApiEntityBase;
         Task<bool> Add<T>(T item) where T : ApiEntityBase;
         Task<bool> Delete<T>(T item) where T : ApiEntityBase;
-        Task<bool> Update<T>(T item) where T : ApiEntityBase; 
+        Task<bool> Update<T>(T item) where T : ApiEntityBase;
 
     }
 }
