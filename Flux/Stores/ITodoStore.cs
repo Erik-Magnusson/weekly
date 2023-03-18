@@ -1,4 +1,5 @@
-﻿using Data.Models;
+﻿using Web.Models;
+
 
 namespace Flux.Stores
 {

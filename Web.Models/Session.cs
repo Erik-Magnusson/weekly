@@ -1,5 +1,5 @@
 ﻿
-namespace Web.Models.Models
+namespace Web.Models
 {
     public class Session
     {
