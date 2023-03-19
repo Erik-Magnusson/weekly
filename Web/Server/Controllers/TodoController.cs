@@ -42,6 +42,7 @@ namespace Web.Server.Controllers
             if (!Guid.TryParse((string?)userId, out var userIdGuid))
                 return Unauthorized();
             todo.UserId = userIdGuid;
+            todo.Id = null;
             await commands.AddOne(todo);
             return Ok(todo);
         }
@@ -54,7 +55,9 @@ namespace Web.Server.Controllers
                 return Unauthorized();
             if (userIdGuid != todo.UserId)
                 return Unauthorized();
-            await commands.ReplaceOne(todo);
+            var success = await commands.ReplaceOne(todo);
+            if (!success)
+                return BadRequest();
             return Ok(todo);
         }
 

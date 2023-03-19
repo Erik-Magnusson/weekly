@@ -38,6 +38,7 @@ namespace Web.Server.Controllers
             if (!Guid.TryParse((string?)userId, out var userIdGuid))
                 return Unauthorized();
             template.UserId = userIdGuid;
+            template.Id = null;
             await commands.AddOne(template);
             return Ok(template);
         }
@@ -50,7 +51,9 @@ namespace Web.Server.Controllers
                 return Unauthorized();
             if (userIdGuid != template.UserId)
                 return Unauthorized();
-            await commands.ReplaceOne(template);
+            var success = await commands.ReplaceOne(template);
+            if (!success)
+                return BadRequest();
             return Ok(template);
         }
 
