@@ -20,7 +20,7 @@ namespace Web.Client.Services.Auth
             try
             {
                 var token = await cookieService.GetValueAsync<string>("weeklyAuth");
-                if (token == null)
+                if (string.IsNullOrEmpty(token))
                     return await Task.FromResult(new AuthenticationState(anonymous));
                 var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {

@@ -7,6 +7,12 @@
         <EditForm class="col-6 offset-3" Model=@credentials OnValidSubmit="@RegisterUser">
             <DataAnnotationsValidator />
             <ValidationSummary />
+            @if (invalidCredentials)
+            {
+                <ul class="validation-errors">
+                    <li class="validation-message">Username not availible.</li>
+                </ul>
+            }
             <div class="form-group m-1">
                 <InputText @bind-Value=credentials.Username class="form-control" id="username" placeholder="Username" />
             </div>
@@ -21,6 +27,7 @@
 </div>
 @code {
 
+    private bool invalidCredentials = false;
     private Credentials credentials = new Credentials();
 
     private void RegisterUser()
@@ -29,9 +36,25 @@
         dispatcher.Dispatch(dispatchable);
     }
 
-    private void Update()
+    protected override void OnInitialized()
     {
-        navManager.NavigateTo("/", true);
+        base.OnInitialized();
+
+        dispatcher.Action += dispatchable =>
+        {
+            switch (dispatchable.ActionType)
+            {
+                case ActionType.AUTHENTICATE_USER:
+                    var token = ((Dispatchable<ActionType, string>)dispatchable).Payload;
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        invalidCredentials = true;
+                        break;
+                    }
+                    navManager.NavigateTo("/", true);
+                    break;
+            }
+        };
     }
 
     

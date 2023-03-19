@@ -19,6 +19,7 @@ namespace Web.Client.Services.Api
                     case ActionType.LOGIN_USER:
                         var token = await LoginUser(((Dispatchable<ActionType, Credentials>)dispatchable).Payload);
                         await cookieService.SetValueAsync("weeklyAuth", token);
+                        dispatcher.Dispatch(new Dispatchable<ActionType, string?>(ActionType.AUTHENTICATE_USER, token));
                         break;
                     case ActionType.LOGOUT_USER:
                         await cookieService.SetValueAsync("weeklyAuth", string.Empty);
@@ -26,6 +27,7 @@ namespace Web.Client.Services.Api
                     case ActionType.REGISTER_USER:
                         token = await RegisterUser(((Dispatchable<ActionType, Credentials>)dispatchable).Payload);
                         await cookieService.SetValueAsync("weeklyAuth", token);
+                        dispatcher.Dispatch(new Dispatchable<ActionType, string?>(ActionType.AUTHENTICATE_USER, token));
                         break;
                 }
             };

@@ -12,6 +12,7 @@ namespace Flux.Dispatchable
         REGISTER_USER,
         LOGIN_USER,
         LOGOUT_USER,
-        UPDATE_WEEK
+        AUTHENTICATE_USER,
+        UPDATE_WEEK,        
     }
 }

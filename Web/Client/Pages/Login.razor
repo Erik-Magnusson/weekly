@@ -43,9 +43,25 @@
         dispatcher.Dispatch(dispatchable);
     }
 
-    private void Update()
-    {
-        navManager.NavigateTo("/", true);
-    }
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        dispatcher.Action += dispatchable =>
+        {
+            switch (dispatchable.ActionType)
+            {
+                case ActionType.AUTHENTICATE_USER:
+                    var token = ((Dispatchable<ActionType, string>)dispatchable).Payload;
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        invalidCredentials = true;
+                        break;
+                    }
+                    navManager.NavigateTo("/", true);
+                    break;
+            }
+        };
+    }
 }

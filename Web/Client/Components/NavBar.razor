@@ -1,4 +1,6 @@
-﻿
+﻿@inject IDispatcher<ActionType> dispatcher
+@inject NavigationManager navManager
+
 <AuthorizeView>
     <div class="p-2 bg-dark bg-gradient">
         <div class="d-flex justify-content-end align-items-center">
@@ -19,8 +21,8 @@
 
     private void Logout()
     {
-        //var weeklyAuth = (WeeklyAuthenticationStateProvider)authenticationStateProvider;
-        //weeklyAuth.Logout();
+        dispatcher.Dispatch(new Dispatchable<ActionType, object?>(ActionType.LOGOUT_USER, null));
+        navManager.NavigateTo("/", true);
     }
 
 }
