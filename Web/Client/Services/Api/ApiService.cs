@@ -50,7 +50,11 @@ namespace Web.Client.Services.Api
             var url = $"api/{typeof(T).Name}".ToLower();
             var response = await httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
-                return await response.Content.ReadFromJsonAsync<IList<T>>();
+            {
+                var result = await response.Content.ReadFromJsonAsync<IList<T>>();
+                if (result != null)
+                    return result;
+            }
             return new List<T>();
         }
         public async Task<T?> Add<T>(T item) where T : ApiEntityBase
