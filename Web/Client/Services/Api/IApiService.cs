@@ -7,9 +7,9 @@ namespace Web.Client.Services.Api
         Task<string?> LoginUser(Credentials credentials);
         Task<string?> RegisterUser(Credentials credentials);
         Task<IList<T>> Get<T>() where T : ApiEntityBase;
-        Task<bool> Add<T>(T item) where T : ApiEntityBase;
-        Task<bool> Delete<T>(T item) where T : ApiEntityBase;
-        Task<bool> Update<T>(T item) where T : ApiEntityBase;
+        Task<T?> Add<T>(T item) where T : ApiEntityBase;
+        Task<T?> Delete<T>(T item) where T : ApiEntityBase;
+        Task<T?> Update<T>(T item) where T : ApiEntityBase;
 
     }
 }

@@ -14,7 +14,6 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddSingleton<IDispatcher<ActionType>, Dispatcher<ActionType>>();
 builder.Services.AddSingleton<IApiService, ApiService>();
-builder.Services.AddSingleton<IUserStore, UserStore>();
 builder.Services.AddSingleton<ITodoStore, TodoStore>();
 builder.Services.AddSingleton<ITemplateStore, TemplateStore>();
 builder.Services.AddSingleton<ICookieService, CookieService>();

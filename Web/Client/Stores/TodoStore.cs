@@ -71,8 +71,8 @@ namespace Web.Client.Stores
                 Year = Year,
             };
 
-            var success = await apiService.Add(todo);
-            if (!success)
+            var addedTodo = await apiService.Add(todo);
+            if (addedTodo == null)
                 return;
             
             allTodos.Add(todo);
@@ -81,8 +81,8 @@ namespace Web.Client.Stores
 
         private async Task DeleteTodo(Todo todo)
         {
-            var success = await apiService.Delete(todo);
-            if (!success)
+            var deletedTodo = await apiService.Delete(todo);
+            if (deletedTodo == null)
                 return;
             allTodos.Remove(todo);
             FilterTodos();
@@ -90,12 +90,12 @@ namespace Web.Client.Stores
 
         private async Task UpdateTodo(Todo todo)
         {
-            var success = await apiService.Update(todo);
-            if (!success)
+            var updatedTodo = await apiService.Update(todo);
+            if (updatedTodo == null)
                 return;
 
             var idx = allTodos.IndexOf(allTodos.FirstOrDefault(x => x.Id == todo.Id));
-            if (idx == -1)
+            if (idx < 0)
                 return;
 
             allTodos[idx] = todo;

@@ -49,33 +49,35 @@ namespace Web.Client.Services.Api
         {
             var url = $"api/{typeof(T).Name}".ToLower();
             var response = await httpClient.GetAsync(url);
-            return await response.Content.ReadFromJsonAsync<IList<T>>();
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<IList<T>>();
+            return new List<T>();
         }
-        public async Task<bool> Add<T>(T item) where T : ApiEntityBase
+        public async Task<T?> Add<T>(T item) where T : ApiEntityBase
         {
             var url = $"api/{typeof(T).Name}".ToLower();
             var response = await httpClient.PostAsJsonAsync(url, item);
             if (response.IsSuccessStatusCode)
-                return true;
-            return false;
+                return await response.Content.ReadFromJsonAsync<T>();
+            return null;
         }
 
-        public async Task<bool> Delete<T>(T item) where T : ApiEntityBase
+        public async Task<T?> Delete<T>(T item) where T : ApiEntityBase
         {
             var url = $"api/{typeof(T).Name}/{item.Id}".ToLower();
             var response = await httpClient.DeleteAsync(url);
             if (response.IsSuccessStatusCode)
-                return true;
-            return false;
+                return await response.Content.ReadFromJsonAsync<T>();
+            return null;
         }
 
-        public async Task<bool> Update<T>(T item) where T : ApiEntityBase
+        public async Task<T?> Update<T>(T item) where T : ApiEntityBase
         {
             var url = $"api/{typeof(T).Name}".ToLower();
             var response = await httpClient.PutAsJsonAsync(url, item);
             if (response.IsSuccessStatusCode)
-                return true;
-            return false;
+                return await response.Content.ReadFromJsonAsync<T>();
+            return null;
         }
 
     }

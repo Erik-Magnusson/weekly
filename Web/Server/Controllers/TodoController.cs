@@ -1,8 +1,8 @@
 ﻿using Data;
 using Data.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+
 
 
 namespace Web.Server.Controllers
@@ -28,9 +28,9 @@ namespace Web.Server.Controllers
         public async Task<IActionResult> Get()
         {
             var userId = HttpContext.Items["UserId"];
-            if (userId == null)
+            if (!Guid.TryParse((string?)userId, out var userIdGuid))
                 return Unauthorized();
-            var result = await queries.GetAll(x => x.UserId, Guid.Parse((string)userId));
+            var result = await queries.GetAll(x => x.UserId, userIdGuid);
             return Ok(result);
         }
 
@@ -39,10 +39,9 @@ namespace Web.Server.Controllers
         public async Task<IActionResult> Post([FromBody] Todo todo)
         {
             var userId = HttpContext.Items["UserId"];
-            if (userId == null)
+            if (!Guid.TryParse((string?)userId, out var userIdGuid))
                 return Unauthorized();
-            if (Guid.Parse((string)userId) != todo.UserId)
-                return Unauthorized();
+            todo.UserId = userIdGuid;
             await commands.AddOne(todo);
             return Ok(todo);
         }
@@ -51,9 +50,9 @@ namespace Web.Server.Controllers
         public async Task<IActionResult> Put([FromBody] Todo todo)
         {
             var userId = HttpContext.Items["UserId"];
-            if (userId == null)
+            if (!Guid.TryParse((string?)userId, out var userIdGuid))
                 return Unauthorized();
-            if (Guid.Parse((string)userId) != todo.UserId)
+            if (userIdGuid != todo.UserId)
                 return Unauthorized();
             await commands.ReplaceOne(todo);
             return Ok(todo);
@@ -64,10 +63,12 @@ namespace Web.Server.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var userId = HttpContext.Items["UserId"];
-            if (userId == null)
+            if (!Guid.TryParse((string?)userId, out var userIdGuid))
                 return Unauthorized();
             var item = await queries.GetOne(id);
-            if (Guid.Parse((string)userId) != item.UserId)
+            if (item == null)
+                return BadRequest();
+            if (userIdGuid != item.UserId)
                 return Unauthorized();
             var success = await commands.RemoveOne(item);
             if (!success)

@@ -43,29 +43,31 @@ namespace Web.Client.Stores
 
         private async Task AddTemplate(Template template)
         {
-            var success = await apiService.Add(template);
-            if (success)
-                Templates.Add(template);
+            var addedTemplate = await apiService.Add(template);
+            if (addedTemplate == null)
+                return;
+            Templates.Add(addedTemplate);
         }
 
         private async Task DeleteTemplate(Template template)
         {
-            var success = await apiService.Delete(template);
-            if (success)
-                Templates.Remove(template);
+            var deletedTemplate = await apiService.Delete(template);
+            if (deletedTemplate == null)
+                return;
+            Templates.Remove(deletedTemplate);
         }
 
         private async Task UpdateTemplate(Template template)
         {
-            var sucess = await apiService.Update(template);
-            if (!sucess)
+            var updatedTemplate = await apiService.Update(template);
+            if (updatedTemplate == null)
                 return;
 
-            var idx = Templates.IndexOf(Templates.FirstOrDefault(x => x.Id == template.Id));
-            if (idx == -1)
+            var idx = Templates.IndexOf(Templates.FirstOrDefault(x => x.Id == updatedTemplate.Id));
+            if (idx < 0)
                 return;
             
-           Templates[idx] = template;
+           Templates[idx] = updatedTemplate;
         }
         
 
