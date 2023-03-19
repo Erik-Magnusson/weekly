@@ -1,14 +1,33 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Web.Server.Middleware;
 using Web.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.Configure<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
+builder.Services.AddAuthentication(o =>
+{
+    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.RequireHttpsMetadata = false;
+    o.SaveToken = true;
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JwtSecurityKey"])),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+
+    };
+});
 
 var app = builder.Build();
 
@@ -29,9 +48,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-app.UseBearerTokenReader();
+app.UseJwtTokenReader();
+
 app.Run();

@@ -4,13 +4,13 @@ using Web.Server.Services;
 
 namespace Web.Server.Middleware
 {
-    public class BearerTokenReaderMiddleware
+    public class JwtTokenReaderMiddleware
     {
 
         private readonly RequestDelegate next;
         private readonly IJwtService jwtService;
 
-        public BearerTokenReaderMiddleware(RequestDelegate next, IJwtService jwtService)
+        public JwtTokenReaderMiddleware(RequestDelegate next, IJwtService jwtService)
         {
             this.next = next;
             this.jwtService = jwtService;
@@ -50,12 +50,12 @@ namespace Web.Server.Middleware
 
     }
 
-    public static class BearerTokenReaderMiddlewareExtensions
+    public static class JwtTokenReaderMiddlewareExtensions
     {
-        public static IApplicationBuilder UseBearerTokenReader(
+        public static IApplicationBuilder UseJwtTokenReader(
             this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<BearerTokenReaderMiddleware>();
+            return builder.UseMiddleware<JwtTokenReaderMiddleware>();
         }
     }
 }

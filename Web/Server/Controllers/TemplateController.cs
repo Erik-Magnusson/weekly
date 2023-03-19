@@ -1,12 +1,13 @@
 ﻿using Data.Models;
 using Data;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TemplateController : ControllerBase
     {
         private readonly IQueries<Template> queries;

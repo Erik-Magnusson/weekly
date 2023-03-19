@@ -8,16 +8,21 @@ namespace Web.Server.Services
 {
     public class JwtService : IJwtService
     {
-        public const string JWT_SECURITY_KEY = "sdfhsdoifhh784yr843yr843yr834yr87y348r7y3487ry348ry8347rfsdoif";
-        public const int JWT_TOKE_VALIDITY_MINS = 20;
+        public readonly string jwtSecurityKey;
+        public const int JWT_TOKE_VALIDITY_MINS = 43200; // 30 days
+
+        public JwtService(IConfiguration configuration) {
+            jwtSecurityKey = configuration["JwtSecurityKey"];
+        }
 
         public string? GenerateToken(User? user)
         {
+            
             if (user == null)
                 return null;
 
             var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKE_VALIDITY_MINS);
-            var tokenKey = Encoding.ASCII.GetBytes(JWT_SECURITY_KEY);
+            var tokenKey = Encoding.ASCII.GetBytes(jwtSecurityKey);
             var claimsIdentity = new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
