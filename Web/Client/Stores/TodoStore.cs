@@ -62,7 +62,7 @@ namespace Web.Client.Stores
         {
             var todo = new Todo()
             {
-                UserId = session.UserId,
+                UserId = template.UserId,
                 Text= template.Text,
                 NrDone = 0,
                 NrTotal = template.NrTotal,
