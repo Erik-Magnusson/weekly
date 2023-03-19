@@ -54,7 +54,7 @@ namespace Web.Client.Stores
             var deletedTemplate = await apiService.Delete(template);
             if (deletedTemplate == null)
                 return;
-            Templates.Remove(deletedTemplate);
+            Templates = Templates.Where(t => t.Id != template.Id).ToList();
         }
 
         private async Task UpdateTemplate(Template template)

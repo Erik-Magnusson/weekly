@@ -84,7 +84,7 @@ namespace Web.Client.Stores
             var deletedTodo = await apiService.Delete(todo);
             if (deletedTodo == null)
                 return;
-            allTodos.Remove(todo);
+            allTodos = allTodos.Where(t => t.Id != deletedTodo.Id).ToList();
             FilterTodos();
         }
 
