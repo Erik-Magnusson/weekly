@@ -14,7 +14,7 @@ namespace Web.Client.Stores
         { 
             get
             {
-                return _todos.Where(x => x.Week == Week).ToList();
+                return _todos.Where(x => x.Week.WeekNr == Week.WeekNr && x.Week.Year == Week.Year).ToList();
             }
             private set
             { 
