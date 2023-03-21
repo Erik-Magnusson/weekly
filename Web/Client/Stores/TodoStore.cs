@@ -75,7 +75,7 @@ namespace Web.Client.Stores
             if (addedTodo == null)
                 return;
             
-            allTodos.Add(todo);
+            allTodos.Add(addedTodo);
             FilterTodos();
         }
 
