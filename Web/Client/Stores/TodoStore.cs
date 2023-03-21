@@ -9,27 +9,39 @@ namespace Web.Client.Stores
 {
     public class TodoStore : ITodoStore
     {
-        private readonly IApiService apiService;
-        public IList<Todo> Todos { get; private set; }  
-        public int Year { get; private set; }
-        public int Week { get; private set; }
+        
+        public IList<Todo> Todos
+        { 
+            get
+            {
+                return _todos.Where(x => x.Week == Week).ToList();
+            }
+            private set
+            { 
+                _todos = value; 
+            }
+        }  
         public Action? OnChange { get; set; }
+        public Week Week { get; private set; }
 
-        private Session? session;
-        private IList<Todo> allTodos;
-        private Calendar calendar;
+        private readonly Calendar calendar;
+        private readonly IApiService apiService;
+        private IList<Todo> _todos;
+        
 
         public TodoStore(IDispatcher<ActionType> dispatcher, IApiService apiService)
         {
             this.apiService = apiService;
-            this.session = null;
 
             CultureInfo culture = new CultureInfo("sv-SE");
             calendar = culture.Calendar;
-            Year = calendar.GetYear(DateTime.Now);
-            Week = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFullWeek, DateTime.Now.DayOfWeek);
+            Week = new Week
+            {
+                Year = calendar.GetYear(DateTime.Now),
+                WeekNr = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFullWeek, DateTime.Now.DayOfWeek)
+            };            
          
-            allTodos = Todos = new List<Todo>();
+            Todos = new List<Todo>();
 
             Load();
 
@@ -50,7 +62,7 @@ namespace Web.Client.Stores
                         OnChange?.Invoke();
                         break;
                     case ActionType.UPDATE_WEEK:
-                        UpdateWeek(((Dispatchable<ActionType, Week>)dispatchable).Payload);
+                        Week = ((Dispatchable<ActionType, Week>)dispatchable).Payload;
                         OnChange?.Invoke();
                         break;
                 }
@@ -62,21 +74,18 @@ namespace Web.Client.Stores
         {
             var todo = new Todo()
             {
-                UserId = template.UserId,
                 Text= template.Text,
                 NrDone = 0,
                 NrTotal = template.NrTotal,
                 Unit = template.Unit,
                 Week = Week,
-                Year = Year,
             };
 
             var addedTodo = await apiService.Add(todo);
             if (addedTodo == null)
                 return;
             
-            allTodos.Add(addedTodo);
-            FilterTodos();
+            _todos.Add(addedTodo);
         }
 
         private async Task DeleteTodo(Todo todo)
@@ -84,8 +93,7 @@ namespace Web.Client.Stores
             var deletedTodo = await apiService.Delete(todo);
             if (deletedTodo == null)
                 return;
-            allTodos = allTodos.Where(t => t.Id != deletedTodo.Id).ToList();
-            FilterTodos();
+            _todos = _todos.Where(t => t.Id != deletedTodo.Id).ToList();
         }
 
         private async Task UpdateTodo(Todo todo)
@@ -94,39 +102,16 @@ namespace Web.Client.Stores
             if (updatedTodo == null)
                 return;
 
-            var idx = allTodos.IndexOf(allTodos.FirstOrDefault(x => x.Id == todo.Id));
+            var idx = _todos.IndexOf(_todos.FirstOrDefault(x => x.Id == todo.Id));
             if (idx < 0)
                 return;
 
-            allTodos[idx] = todo;
-            FilterTodos();
-        }
-
-        private void UpdateWeek(Week week)
-        {
-            Week = week.WeekNr;
-            if (week.WeekNr == 0)
-            {
-                Year--;
-                Week = 52;
-            }
-            if (week.WeekNr > 52)
-            {
-                Year++;
-                Week = 1;
-            }
-            FilterTodos();
-        }
-
-        private void FilterTodos()
-        {
-            Todos = allTodos.Where(x => x.Week == Week && x.Year == Year).ToList();
+            _todos[idx] = todo;
         }
 
         private async void Load()
         {
-            allTodos = await apiService.Get<Todo>();
-            FilterTodos();
+            _todos = await apiService.Get<Todo>();
             OnChange?.Invoke();
         }
 

@@ -8,8 +8,7 @@ namespace Web.Models
         public int NrTotal { get; set; }
         public int NrDone { get; set; }
         public TodoUnit Unit { get; set; }
-        public int Week { get; set; }
-        public int Year { get; set; }
+        public Week Week { get; set; }
 
         public enum TodoUnit
         {
