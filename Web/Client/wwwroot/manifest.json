@@ -1,6 +1,6 @@
 {
-  "name": "Web",
-  "short_name": "Web",
+  "name": "Weekly",
+  "short_name": "Weekly",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
