@@ -9,7 +9,7 @@ namespace Web.Server.Services
     public class JwtService : IJwtService
     {
         public readonly string jwtSecurityKey;
-        public const int JWT_TOKE_VALIDITY_MINS = 43200; // 30 days
+        public const int JWT_TOKEN_VALIDITY_MINS = 43200; // 30 days
 
         public JwtService(IConfiguration configuration) {
             jwtSecurityKey = configuration["JwtSecurityKey"];
@@ -21,7 +21,7 @@ namespace Web.Server.Services
             if (user == null)
                 return null;
 
-            var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKE_VALIDITY_MINS);
+            var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKEN_VALIDITY_MINS);
             var tokenKey = Encoding.ASCII.GetBytes(jwtSecurityKey);
             var claimsIdentity = new ClaimsIdentity(new List<Claim>
             {

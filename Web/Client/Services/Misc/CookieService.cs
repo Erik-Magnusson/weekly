@@ -53,12 +53,12 @@ namespace Web.Client.Services.Misc
 
         }
 
-        public async Task SetValueAsync<T>(string key, T value)
+        public async Task SetValueAsync<T>(string key, T value, int expiryInDays = 0)
         {
             var valueJson = JsonSerializer.Serialize(value);
 
             await WaitForReference();
-            await accessorJsRef.Value.InvokeVoidAsync("set", key, valueJson);
+            await accessorJsRef.Value.InvokeVoidAsync("set", key, valueJson, expiryInDays);
         }
     }
 }

@@ -4,6 +4,6 @@
     {
         ValueTask DisposeAsync();
         Task<T?> GetValueAsync<T>(string key);
-        Task SetValueAsync<T>(string key, T value);
+        Task SetValueAsync<T>(string key, T value, int expiryInDays = 0);
     }
 }
