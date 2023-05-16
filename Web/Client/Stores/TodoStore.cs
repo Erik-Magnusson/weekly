@@ -10,11 +10,11 @@ namespace Web.Client.Stores
     public class TodoStore : ITodoStore
     {
         
-        public IList<Todo> Todos
+        public IList<Todo>? Todos
         { 
             get
             {
-                return _todos.Where(x => x.Week.WeekNr == Week.WeekNr && x.Week.Year == Week.Year).ToList();
+                return _todos?.Where(x => x.Week.WeekNr == Week.WeekNr && x.Week.Year == Week.Year).ToList();
             }
             private set
             { 
@@ -26,7 +26,7 @@ namespace Web.Client.Stores
 
         private readonly Calendar calendar;
         private readonly IApiService apiService;
-        private IList<Todo> _todos;
+        private IList<Todo>? _todos;
         
 
         public TodoStore(IDispatcher<ActionType> dispatcher, IApiService apiService)
@@ -39,9 +39,9 @@ namespace Web.Client.Stores
             {
                 Year = calendar.GetYear(DateTime.Now),
                 WeekNr = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFullWeek, DateTime.Now.DayOfWeek)
-            };            
-         
-            Todos = new List<Todo>();
+            };
+
+            _todos = null;
 
             Load();
 

@@ -8,22 +8,31 @@
     <WeekSelector
         CurrentWeek="@todoStore.Week"
     />
-    @if (todoStore.Todos.Count == 0)
+    @if (todoStore.Todos == null)
+    {
+        <div class="d-flex justify-content-center m-3">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    }
+    else if (todoStore.Todos.Count == 0)
     {
         <div class="d-flex align-items-center mt-4 mb-4 flex-column">
             <p class="fw-bold">There are curently no items in your list. </p>
             <a class="text-black" href="/admin">Add a todo to get started.</a>
-        </div>      
-    }
-    <div class="mt-3 mb-3">
-        @foreach (var todo in todoStore.Todos)
-        {
-        <div class="p-2 m-2 bg-white border border-dark rounded row">
-            <TodoItem Item="@todo" />
-            
         </div>
-        }
-    </div>
+    }
+    else
+    {
+        <div class="mt-3 mb-3">
+            @foreach (var todo in todoStore.Todos)
+            {
+                <div class="p-2 m-2 bg-white border border-dark rounded row">
+                    <TodoItem Item="@todo" />
+                </div>
+            }
+        </div>
+    }
+    
 </div>
 
 
